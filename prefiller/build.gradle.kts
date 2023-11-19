@@ -15,7 +15,9 @@
  */
 
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
+import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 plugins {
     id("org.jetbrains.kotlin.jvm")
@@ -53,20 +55,32 @@ dependencies {
     testImplementation(Dependencies.TRUTH)
 }
 
-sourceSets {
-    main {
-        kotlin.srcDir(tasks.named("generateGrammarSource"))
-    }
-
-    test.configure {
-        java.srcDirs("$rootDir/buildSrc/src/main/kotlin") // Make versions available in tests
-        kotlin.srcDir(tasks.named("generateTestGrammarSource"))
+configurations {
+    // Exclude full antlr4 tool from dependencies
+    // Workaround for https://github.com/gradle/gradle/issues/820
+    api {
+        setExtendsFrom(extendsFrom.filterNot { it == antlr.get() })
     }
 }
 
-tasks.withType<KotlinCompile>().configureEach {
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.toString()
+sourceSets {
+    main {
+        java.srcDir(tasks.named("generateGrammarSource").map { files() })
+    }
+
+    test {
+        java.srcDirs(
+            tasks.named("generateTestGrammarSource").map { files() },
+            "$rootDir/buildSrc/src/main/kotlin", // Make versions available in tests
+        )
+    }
+}
+
+tasks.withType<KotlinJvmCompile>().configureEach {
+    compilerOptions {
+        jvmTarget = JvmTarget.JVM_11
+        apiVersion = KotlinVersion.KOTLIN_1_6
+        languageVersion = KotlinVersion.KOTLIN_1_6
     }
 }
 

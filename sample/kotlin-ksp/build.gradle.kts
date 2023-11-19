@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 plugins {
     id("com.android.library")
@@ -45,12 +46,6 @@ android {
     }
 }
 
-tasks.withType<KotlinCompile>().configureEach {
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.toString()
-    }
-}
-
 dependencies {
     implementation(Dependencies.KOTLIN_STDLIB)
     implementation(Dependencies.APPCOMPAT)
@@ -61,6 +56,12 @@ dependencies {
     testImplementation(Dependencies.TRUTH)
     testImplementation(Dependencies.ANDROIDX_TEST)
     testImplementation(Dependencies.ROBOLECTRIC)
+}
+
+tasks.withType<KotlinJvmCompile>().configureEach {
+    compilerOptions {
+        jvmTarget = JvmTarget.JVM_11
+    }
 }
 
 prefiller {
