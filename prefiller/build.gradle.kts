@@ -26,7 +26,7 @@ plugins {
 }
 
 group = "io.github.simonschiller"
-version = "1.4.0" // Also update the version in the README
+version = "1.5.0" // Also update the version in the README
 
 repositories {
     google()
@@ -36,7 +36,11 @@ repositories {
 dependencies {
     antlr(Dependencies.ANTLR)
 
+    implementation(Dependencies.ANTLR_RUNTIME)
     implementation(Dependencies.SQLITE)
+    implementation(Dependencies.JSONP_API)
+
+    runtimeOnly(Dependencies.JSONP)
 
     compileOnly(Dependencies.AGP)
     compileOnly(Dependencies.SDK_COMMON)
@@ -50,25 +54,25 @@ dependencies {
 }
 
 sourceSets {
+    main {
+        kotlin.srcDir(tasks.named("generateGrammarSource"))
+    }
+
     test.configure {
         java.srcDirs("$rootDir/buildSrc/src/main/kotlin") // Make versions available in tests
+        kotlin.srcDir(tasks.named("generateTestGrammarSource"))
     }
 }
 
 tasks.withType<KotlinCompile>().configureEach {
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8.toString()
+        jvmTarget = JavaVersion.VERSION_11.toString()
     }
-    dependsOn(tasks.named("generateGrammarSource")) // Make sure the ANTLR grammar gets compiled
 }
 
 tasks.withType<JavaCompile>().configureEach {
-    sourceCompatibility = JavaVersion.VERSION_1_8.toString()
-    targetCompatibility = JavaVersion.VERSION_1_8.toString()
-}
-
-tasks.withType<Jar>().configureEach {
-    dependsOn(tasks.named("generateGrammarSource")) // Make sure the ANTLR grammar gets compiled
+    sourceCompatibility = JavaVersion.VERSION_11.toString()
+    targetCompatibility = JavaVersion.VERSION_11.toString()
 }
 
 tasks.withType<Test>().configureEach {
@@ -88,28 +92,15 @@ tasks.withType<AntlrTask>().configureEach {
 }
 
 gradlePlugin {
+    website.set("https://github.com/simonschiller/prefiller")
+    vcsUrl.set("https://github.com/simonschiller/prefiller")
     plugins {
         create("prefiller") {
             id = "io.github.simonschiller.prefiller"
             implementationClass = "io.github.simonschiller.prefiller.PrefillerPlugin"
-        }
-    }
-}
-
-pluginBundle {
-    website = "https://github.com/simonschiller/prefiller"
-    vcsUrl = "https://github.com/simonschiller/prefiller"
-    description = "Prefiller is a Gradle plugin that generates pre-filled Room databases at compile time."
-    tags = listOf("android", "room")
-
-    mavenCoordinates {
-        groupId = project.group.toString()
-        artifactId = "prefiller"
-    }
-
-    (plugins) {
-        "prefiller" {
             displayName = "Prefiller"
+            description = "Prefiller is a Gradle plugin that generates pre-filled Room databases at compile time."
+            tags = listOf("android", "room")
         }
     }
 }
