@@ -19,8 +19,8 @@ object Versions {
     const val MIN_SDK = 21
     const val TARGET_SDK = 34
 
-    // const val AGP = "8.1.3" // https://maven.google.com/web/index.html#com.android.tools.build:gradle
-    const val AGP = "8.3.0-alpha14" // https://maven.google.com/web/index.html#com.android.tools.build:gradle
+    const val AGP = "8.1.3" // https://maven.google.com/web/index.html#com.android.tools.build:gradle
+    // const val AGP = "8.3.0-alpha14" // https://maven.google.com/web/index.html#com.android.tools.build:gradle
     const val KOTLIN = "1.9.20" // https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-stdlib
     const val KSP = "1.9.20-1.0.14" // https://mvnrepository.com/artifact/com.google.devtools.ksp/com.google.devtools.ksp.gradle.plugin?repo=central
     const val PUBLISH_GRADLE_PLUGIN = "1.2.1" // https://mvnrepository.com/artifact/com.gradle.publish/plugin-publish-plugin?repo=gradle-plugins
@@ -28,7 +28,6 @@ object Versions {
     const val SDK_COMMON = "31.1.4" // https://maven.google.com/web/index.html#com.android.tools:sdk-common
     const val ANTLR = "4.13.1" // https://mvnrepository.com/artifact/org.antlr/antlr4
     const val SQLITE = "3.44.0.0" // https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc
-    const val JSONP_API = "2.1.3" // https://mvnrepository.com/artifact/jakarta.json/jakarta.json-api
     const val JSONP = "2.0.1" // https://mvnrepository.com/artifact/org.glassfish/jakarta.json
     const val JUNIT_5 = "5.10.1" // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-engine
     const val TRUTH = "1.1.5" // https://mvnrepository.com/artifact/com.google.truth/truth
@@ -52,7 +51,6 @@ object Dependencies {
     const val ANTLR = "org.antlr:antlr4:${Versions.ANTLR}"
     const val ANTLR_RUNTIME = "org.antlr:antlr4-runtime:${Versions.ANTLR}"
     const val SQLITE = "org.xerial:sqlite-jdbc:${Versions.SQLITE}"
-    const val JSONP_API = "jakarta.json:jakarta.json-api:${Versions.JSONP_API}"
     const val JSONP = "org.glassfish:jakarta.json:${Versions.JSONP}"
     const val JUNIT_5_ENGINE = "org.junit.jupiter:junit-jupiter-engine:${Versions.JUNIT_5}"
     const val JUNIT_5_API = "org.junit.jupiter:junit-jupiter-api:${Versions.JUNIT_5}"

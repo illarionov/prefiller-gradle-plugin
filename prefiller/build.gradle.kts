@@ -40,9 +40,7 @@ dependencies {
 
     implementation(Dependencies.ANTLR_RUNTIME)
     implementation(Dependencies.SQLITE)
-    implementation(Dependencies.JSONP_API)
-
-    runtimeOnly(Dependencies.JSONP)
+    implementation(Dependencies.JSONP)
 
     compileOnly(Dependencies.AGP)
     compileOnly(Dependencies.SDK_COMMON)
@@ -56,8 +54,7 @@ dependencies {
 }
 
 configurations {
-    // Exclude full antlr4 tool from dependencies
-    // Workaround for https://github.com/gradle/gradle/issues/820
+    // Exclude antlr4 from transitive dependencies (https://github.com/gradle/gradle/issues/820)
     api {
         setExtendsFrom(extendsFrom.filterNot { it == antlr.get() })
     }
@@ -94,6 +91,9 @@ tasks.withType<Test>().configureEach {
     dependsOn("publishToMavenLocal")
 
     jvmArgs("-XX:MaxMetaspaceSize=2g")
+    javaLauncher = javaToolchains.launcherFor {
+        languageVersion = JavaLanguageVersion.of(11)
+    }
 
     testLogging {
         events("passed", "skipped", "failed")
