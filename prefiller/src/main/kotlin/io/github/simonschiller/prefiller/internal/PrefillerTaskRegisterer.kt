@@ -123,8 +123,8 @@ internal class PrefillerTaskRegisterer(
 
     private companion object {
         private const val SCHEMA_LOCATION_KEY = "room.schemaLocation"
-        private fun String.capitalizeAscii(): String = replaceFirstChar {
-            if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString()
-        }
+
+        @Suppress("DEPRECATION")
+        private fun String.capitalizeAscii(): String = capitalize(Locale.ROOT)
     }
 }

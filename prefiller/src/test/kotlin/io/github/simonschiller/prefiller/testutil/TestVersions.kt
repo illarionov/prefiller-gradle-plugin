@@ -17,6 +17,8 @@
 package io.github.simonschiller.prefiller.testutil
 
 import io.github.simonschiller.prefiller.internal.util.Version
+import io.github.simonschiller.prefiller.testutil.AgpVersionCompatibility.agpIsCompatibleWithRuntime
+import io.github.simonschiller.prefiller.testutil.GradleVersionCompatibility.gradleIsCompatibleWithRuntime
 import io.github.simonschiller.prefiller.testutil.spec.JavaProjectSpec
 import io.github.simonschiller.prefiller.testutil.spec.KotlinKaptProjectSpec
 import io.github.simonschiller.prefiller.testutil.spec.KotlinKspProjectSpec
@@ -26,12 +28,16 @@ import io.github.simonschiller.prefiller.testutil.spec.NoSchemaLocationKotlinKsp
 import org.junit.jupiter.api.extension.ExtensionContext
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.ArgumentsProvider
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.util.stream.Stream
 
 open class TestVersions : ArgumentsProvider {
+    private val logger: Logger = LoggerFactory.getLogger(TestVersions::class.java)
 
     // See https://gradle.org/releases
     private val gradleVersions = listOf(
+        "8.4",
         "8.4",
         "8.3",
         "8.2.1",
@@ -52,7 +58,7 @@ open class TestVersions : ArgumentsProvider {
         "6.4.1",
         "6.3",
         "6.2.2",
-        "6.1.1"
+        "6.1.1",
     )
 
     // See https://developer.android.com/studio/releases/gradle-plugin
@@ -68,19 +74,51 @@ open class TestVersions : ArgumentsProvider {
     )
 
     override fun provideArguments(context: ExtensionContext): Stream<out Arguments> {
-        val arguments = mutableListOf<Arguments>()
-        gradleVersions().forEach { gradleVersion ->
-            agpVersions().forEach { agpVersion ->
-                if (agpVersion.baseVersion() isCompatibleWith gradleVersion.baseVersion()) {
-                    arguments += Arguments.of(gradleVersion.toString(), agpVersion.toString())
-                }
-            }
-        }
+        val arguments = getCompatibleGradleAgpVersions()
+            .map { (gradleVersion, agpVersion) -> Arguments.of(gradleVersion.toString(), agpVersion.toString()) }
+            .toList()
 
         require(arguments.isNotEmpty()) {
             "Found no compatible AGP and Gradle version combination, check your supplied arguments."
         }
+
         return arguments.stream()
+    }
+
+    private fun getCompatibleGradleAgpVersions(): Sequence<Pair<Version, Version>> {
+        val (gradleCompatibleVersions, gradleIncompatibleVersions) = gradleVersions().partition {
+            gradleIsCompatibleWithRuntime(it.baseVersion())
+        }
+
+        if (gradleIncompatibleVersions.isNotEmpty()) {
+            logger.warn(
+                "Gradle versions {} cannot be run on the current JVM `{}`",
+                gradleIncompatibleVersions.joinToString(),
+                Runtime.version()
+            )
+        }
+
+        val (agpCompatibleVersions, agpIncompatibleVersions) = agpVersions().partition {
+            agpIsCompatibleWithRuntime(it)
+        }
+
+        if (agpIncompatibleVersions.isNotEmpty()) {
+            logger.warn(
+                "Android Gradle Plugin versions {} cannot be run on the current JVM `{}`",
+                agpIncompatibleVersions.joinToString(),
+                Runtime.version()
+            )
+        }
+
+        return sequence {
+            gradleCompatibleVersions.forEach { gradleVersion ->
+                agpCompatibleVersions.forEach { agpVersion ->
+                    yield(gradleVersion to agpVersion)
+                }
+            }
+        }.filter { (gradleVersion, agpVersion) ->
+            AgpVersionCompatibility.agpIsCompatibleWithGradle(agpVersion, gradleVersion)
+        }
     }
 
     // Allow setting a single, fixed Gradle version via environment variables
@@ -104,19 +142,8 @@ open class TestVersions : ArgumentsProvider {
     }
 
     // Checks if a AGP version (receiver) is compatible KSP
-    protected fun Version.isCompatibleWithKsp(): Boolean {
+    protected fun Version.agpIsCompatibleWithKsp(): Boolean {
         return baseVersion() >= Version.parse("4.1.0")
-    }
-
-    // Checks if a AGP version (receiver) is compatible with a certain version of Gradle
-    private infix fun Version.isCompatibleWith(gradleVersion: Version) = when {
-        this >= Version.parse("7.2.0") -> gradleVersion >= Version.parse("7.3.3")
-        this >= Version.parse("7.1.0") -> gradleVersion >= Version.parse("7.2")
-        this >= Version.parse("7.0.0") -> gradleVersion >= Version.parse("7.0")
-        this >= Version.parse("4.2.0") -> gradleVersion >= Version.parse("6.7.1")
-        this >= Version.parse("4.1.0") -> gradleVersion >= Version.parse("6.5")
-        this >= Version.parse("4.0.0") -> gradleVersion >= Version.parse("6.1.1") && gradleVersion < Version.parse("7.0")
-        else -> false
     }
 }
 
@@ -128,7 +155,7 @@ class LanguageTestVersions : ArgumentsProvider, TestVersions() {
             val (gradleVersion, agpVersion) = argument.get()
             arguments += Arguments.of(gradleVersion, agpVersion, JavaProjectSpec())
             arguments += Arguments.of(gradleVersion, agpVersion, KotlinKaptProjectSpec())
-            if (Version.parse(agpVersion as String).isCompatibleWithKsp()) {
+            if (Version.parse(agpVersion as String).agpIsCompatibleWithKsp()) {
                 arguments += Arguments.of(gradleVersion, agpVersion, KotlinKspProjectSpec())
             }
         }
@@ -144,7 +171,7 @@ class NoSchemaLocationTestVersions : ArgumentsProvider, TestVersions() {
             val (gradleVersion, agpVersion) = argument.get()
             arguments += Arguments.of(gradleVersion, agpVersion, NoSchemaLocationJavaProjectSpec())
             arguments += Arguments.of(gradleVersion, agpVersion, NoSchemaLocationKotlinKaptProjectSpec())
-            if (Version.parse(agpVersion as String).isCompatibleWithKsp()) {
+            if (Version.parse(agpVersion as String).agpIsCompatibleWithKsp()) {
                 arguments += Arguments.of(gradleVersion, agpVersion, NoSchemaLocationKotlinKspProjectSpec())
             }
         }
