@@ -17,7 +17,7 @@
 package io.github.simonschiller.prefiller.testutil.spec
 
 open class NoSchemaLocationJavaProjectSpec(
-    versionCatalog: VersionCatalog
+    versionCatalog: VersionCatalog,
 ) : JavaProjectSpec(versionCatalog) {
 
     override fun getModuleBuildGradleContent() = """
@@ -35,8 +35,8 @@ open class NoSchemaLocationJavaProjectSpec(
             	targetSdkVersion(${versionCatalog.targetSdk})
             }
             compileOptions {
-                sourceCompatibility = JavaVersion.VERSION_1_8
-                targetCompatibility = JavaVersion.VERSION_1_8
+                sourceCompatibility = JavaVersion.${versionCatalog.compatibilityJavaVersion.name}
+                targetCompatibility = JavaVersion.${versionCatalog.compatibilityJavaVersion.name}
             }
         }
         dependencies {
@@ -52,5 +52,5 @@ open class NoSchemaLocationJavaProjectSpec(
 
     """.trimIndent()
 
-    override fun toString() = "Java project without schema location configured"
+    override fun toString() = "Java project without schema location configured ($versionCatalog)"
 }

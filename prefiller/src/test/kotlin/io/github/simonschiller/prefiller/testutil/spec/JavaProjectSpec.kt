@@ -17,7 +17,7 @@
 package io.github.simonschiller.prefiller.testutil.spec
 
 open class JavaProjectSpec(
-    override val versionCatalog: VersionCatalog
+    override val versionCatalog: VersionCatalog,
 ) : BaseProjectSpec() {
 
     override fun getRootBuildGradleContent() = """
@@ -56,8 +56,8 @@ open class JavaProjectSpec(
                 }
             }
             compileOptions {
-                sourceCompatibility = JavaVersion.VERSION_1_8
-                targetCompatibility = JavaVersion.VERSION_1_8
+                sourceCompatibility = JavaVersion.${versionCatalog.compatibilityJavaVersion.name}
+                targetCompatibility = JavaVersion.${versionCatalog.compatibilityJavaVersion.name}
             }
         }
         dependencies {
@@ -103,5 +103,5 @@ open class JavaProjectSpec(
 
     """.trimIndent()
 
-    override fun toString() = "Normal Java project"
+    override fun toString() = "Normal Java project ($versionCatalog)"
 }

@@ -65,5 +65,5 @@ open class NonAndroidProjectSpec(
 
     """.trimIndent()
 
-    override fun toString() = "Non-Android project"
+    override fun toString() = "Non-Android project ($versionCatalog)"
 }

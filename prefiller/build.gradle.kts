@@ -76,6 +76,7 @@ sourceSets {
 tasks.withType<KotlinJvmCompile>().configureEach {
     compilerOptions {
         jvmTarget = JvmTarget.JVM_11
+        // https://docs.gradle.org/current/userguide/compatibility.html#kotlin
         apiVersion = KotlinVersion.KOTLIN_1_6
         languageVersion = KotlinVersion.KOTLIN_1_6
     }

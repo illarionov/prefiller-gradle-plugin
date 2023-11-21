@@ -58,8 +58,8 @@ open class DynamicFeatureProjectSpec(
                 }
             }
             compileOptions {
-                sourceCompatibility = JavaVersion.VERSION_1_8
-                targetCompatibility = JavaVersion.VERSION_1_8
+                sourceCompatibility = JavaVersion.${versionCatalog.compatibilityJavaVersion.name}
+                targetCompatibility = JavaVersion.${versionCatalog.compatibilityJavaVersion.name}
             }
         }
         dependencies {
@@ -136,8 +136,8 @@ open class DynamicFeatureProjectSpec(
             	targetSdkVersion(${versionCatalog.targetSdk})
             }
             compileOptions {
-                sourceCompatibility = JavaVersion.VERSION_1_8
-                targetCompatibility = JavaVersion.VERSION_1_8
+                sourceCompatibility = JavaVersion.${versionCatalog.compatibilityJavaVersion.name}
+                targetCompatibility = JavaVersion.${versionCatalog.compatibilityJavaVersion.name}
             }
             dynamicFeatures = [":module"]
         }
@@ -148,5 +148,5 @@ open class DynamicFeatureProjectSpec(
         <manifest package="com.test" />
     """.trimIndent()
 
-    override fun toString() = "Dynamic feature module project"
+    override fun toString() = "Dynamic feature module project ($versionCatalog)"
 }

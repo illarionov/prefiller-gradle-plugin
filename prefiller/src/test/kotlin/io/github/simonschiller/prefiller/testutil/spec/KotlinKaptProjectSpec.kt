@@ -17,8 +17,8 @@
 package io.github.simonschiller.prefiller.testutil.spec
 
 open class KotlinKaptProjectSpec(
-    override val versionCatalog: VersionCatalog,
-) : KotlinProjectSpec() {
+    versionCatalog: VersionCatalog,
+) : KotlinProjectSpec(versionCatalog) {
 
     override fun getRootBuildGradleContent() = """
         buildscript {
@@ -53,8 +53,8 @@ open class KotlinKaptProjectSpec(
             	targetSdkVersion(${versionCatalog.targetSdk})
             }
             compileOptions {
-                sourceCompatibility = JavaVersion.VERSION_1_8
-                targetCompatibility = JavaVersion.VERSION_1_8
+                sourceCompatibility = JavaVersion.${versionCatalog.compatibilityJavaVersion.name}
+                targetCompatibility = JavaVersion.${versionCatalog.compatibilityJavaVersion.name}
             }
             kapt {
                 arguments {
@@ -73,8 +73,9 @@ open class KotlinKaptProjectSpec(
                 scripts.from(file("setup.sql"))
             }
         }
+        ${getKotlinTaskSetupContent()}
 
     """.trimIndent()
 
-    override fun toString() = "Kotlin project using KAPT"
+    override fun toString() = "Kotlin project using KAPT ($versionCatalog)"
 }

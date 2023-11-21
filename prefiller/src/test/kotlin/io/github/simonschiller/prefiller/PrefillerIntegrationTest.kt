@@ -124,9 +124,11 @@ class PrefillerIntegrationTest {
         assertThat(result.tasks.outcomeOf("prefillPeopleDebugDatabase")).isEqualTo(TaskOutcome.UP_TO_DATE)
 
         // Trigger change
-        project.scriptFile.appendText("""
+        project.scriptFile.appendText(
+            """
             INSERT INTO people(name, age) VALUES ("Jorja Maddox", 39);
-        """.trimIndent())
+        """.trimIndent(),
+        )
 
         result = project.run("prefillPeopleDebugDatabase")
         assertThat(result.tasks.outcomeOf("prefillPeopleDebugDatabase")).isEqualTo(TaskOutcome.SUCCESS)

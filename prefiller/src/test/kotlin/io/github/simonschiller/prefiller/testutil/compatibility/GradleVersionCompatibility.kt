@@ -1,4 +1,4 @@
-package io.github.simonschiller.prefiller.testutil
+package io.github.simonschiller.prefiller.testutil.compatibility
 
 import io.github.simonschiller.prefiller.internal.util.Version
 

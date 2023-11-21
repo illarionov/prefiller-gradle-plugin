@@ -17,8 +17,8 @@
 package io.github.simonschiller.prefiller.testutil.spec
 
 open class KotlinKspProjectSpec(
-    override val versionCatalog: VersionCatalog,
-) : KotlinProjectSpec() {
+    versionCatalog: VersionCatalog,
+) : KotlinProjectSpec(versionCatalog) {
 
     override fun getRootBuildGradleContent() = """
         buildscript {
@@ -54,8 +54,8 @@ open class KotlinKspProjectSpec(
             	targetSdkVersion(${versionCatalog.targetSdk})
             }
             compileOptions {
-                sourceCompatibility = JavaVersion.VERSION_1_8
-                targetCompatibility = JavaVersion.VERSION_1_8
+                sourceCompatibility = JavaVersion.${versionCatalog.compatibilityJavaVersion.name}
+                targetCompatibility = JavaVersion.${versionCatalog.compatibilityJavaVersion.name}
             }
             ksp {
                 arg("room.schemaLocation", projectDir.absolutePath + "/schemas")
@@ -72,8 +72,9 @@ open class KotlinKspProjectSpec(
                 scripts.from(file("setup.sql"))
             }
         }
+        ${getKotlinTaskSetupContent()}
 
     """.trimIndent()
 
-    override fun toString() = "Kotlin project using KSP"
+    override fun toString() = "Kotlin project using KSP ($versionCatalog)"
 }

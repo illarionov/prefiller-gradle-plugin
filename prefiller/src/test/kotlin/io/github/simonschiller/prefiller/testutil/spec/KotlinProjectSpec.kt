@@ -16,7 +16,11 @@
 
 package io.github.simonschiller.prefiller.testutil.spec
 
-abstract class KotlinProjectSpec : BaseProjectSpec() {
+import io.github.simonschiller.prefiller.internal.util.Version
+
+abstract class KotlinProjectSpec(
+    override val versionCatalog: VersionCatalog,
+) : BaseProjectSpec() {
 
     override fun getEntityClassName() = "Person.kt"
 
@@ -30,7 +34,7 @@ abstract class KotlinProjectSpec : BaseProjectSpec() {
             @PrimaryKey val name: String,
             val age: Int
         )
-            
+
     """.trimIndent()
 
     override fun getDatabaseClassName() = "PeopleDatabase.kt"
@@ -42,6 +46,22 @@ abstract class KotlinProjectSpec : BaseProjectSpec() {
 
         @Database(entities = [Person::class], version = 1)
         abstract class PeopleDatabase : RoomDatabase()
-            
+
     """.trimIndent()
+
+    protected fun getKotlinTaskSetupContent(): String =
+        if (Version.parse(versionCatalog.agpVersion) >= Version(7, 0, 0)) {
+            """
+        tasks
+            .withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask.class)
+            .configureEach {
+                kotlinOptions {
+                    jvmTarget = JavaVersion.${versionCatalog.compatibilityJavaVersion.name}.toString()
+                }
+            }
+
+        """.trimIndent()
+        } else {
+            ""
+        }
 }

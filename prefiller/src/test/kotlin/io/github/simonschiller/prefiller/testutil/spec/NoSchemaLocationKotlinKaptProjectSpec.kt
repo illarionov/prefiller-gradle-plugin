@@ -37,8 +37,8 @@ open class NoSchemaLocationKotlinKaptProjectSpec(
             	targetSdkVersion(${versionCatalog.targetSdk})
             }
             compileOptions {
-                sourceCompatibility = JavaVersion.VERSION_1_8
-                targetCompatibility = JavaVersion.VERSION_1_8
+                sourceCompatibility = JavaVersion.${versionCatalog.compatibilityJavaVersion.name}
+                targetCompatibility = JavaVersion.${versionCatalog.compatibilityJavaVersion.name}
             }
         }
         dependencies {
@@ -52,8 +52,9 @@ open class NoSchemaLocationKotlinKaptProjectSpec(
                 scripts.from(file("setup.sql"))
             }
         }
+        ${getKotlinTaskSetupContent()}
 
     """.trimIndent()
 
-    override fun toString() = "Kotlin project using KAPT without schema location configured"
+    override fun toString() = "Kotlin project using KAPT without schema location configured ($versionCatalog)"
 }
