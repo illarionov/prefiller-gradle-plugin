@@ -18,9 +18,11 @@ package io.github.simonschiller.prefiller.testutil.spec
 
 import java.io.File
 
-open class DynamicFeatureProjectSpec : BaseProjectSpec() {
+open class DynamicFeatureProjectSpec(
+    override val versionCatalog: VersionCatalog,
+) : BaseProjectSpec() {
 
-    override fun getRootBuildGradleContent(agpVersion: String) = """
+    override fun getRootBuildGradleContent() = """
         buildscript {
             repositories {
                 mavenLocal()
@@ -28,27 +30,27 @@ open class DynamicFeatureProjectSpec : BaseProjectSpec() {
 		        mavenCentral()
 	        }
 	        dependencies {
-		        classpath("com.android.tools.build:gradle:$agpVersion")
+		        classpath("com.android.tools.build:gradle:${versionCatalog.agpVersion}")
                 classpath("io.github.simonschiller:prefiller:+")
 	        }
         }
-            
+
     """.trimIndent()
 
     override fun getModuleBuildGradleContent() = """
         apply plugin: "com.android.dynamic-feature"
         apply plugin: "io.github.simonschiller.prefiller"
-            
+
         repositories {
             google()
             mavenCentral()
         }
         android {
-            compileSdkVersion(${Versions.COMPILE_SDK})
+            compileSdkVersion(${versionCatalog.compileSdk})
         	defaultConfig {
-            	minSdkVersion(${Versions.MIN_SDK})
-            	targetSdkVersion(${Versions.TARGET_SDK})
-            
+            	minSdkVersion(${versionCatalog.minSdk})
+            	targetSdkVersion(${versionCatalog.targetSdk})
+
                 javaCompileOptions {
                     annotationProcessorOptions {
                         arguments["room.schemaLocation"] = projectDir.absolutePath + "/schemas"
@@ -59,19 +61,19 @@ open class DynamicFeatureProjectSpec : BaseProjectSpec() {
                 sourceCompatibility = JavaVersion.VERSION_1_8
                 targetCompatibility = JavaVersion.VERSION_1_8
             }
-        }    
+        }
         dependencies {
             implementation(project(":app"))
-            implementation("${Dependencies.ROOM_RUNTIME}")
-            annotationProcessor("${Dependencies.ROOM_COMPILER}")
-        }    
+            implementation("${versionCatalog.roomRuntime}")
+            annotationProcessor("${versionCatalog.roomCompiler}")
+        }
         prefiller {
             database("people") {
                 classname.set("com.test.PeopleDatabase")
                 scripts.from(file("setup.sql"))
             }
         }
-            
+
     """.trimIndent()
 
     override fun getEntityClassName() = "Person.java"
@@ -89,7 +91,7 @@ open class DynamicFeatureProjectSpec : BaseProjectSpec() {
             public String name;
             public int age;
         }
-            
+
     """.trimIndent()
 
     override fun getDatabaseClassName() = "PeopleDatabase.java"
@@ -101,7 +103,7 @@ open class DynamicFeatureProjectSpec : BaseProjectSpec() {
 
         @Database(entities = {Person.class}, version = 1)
         public abstract class PeopleDatabase extends RoomDatabase {}
-            
+
     """.trimIndent()
 
     override fun getSettingsGradleContent() = """
@@ -112,7 +114,7 @@ open class DynamicFeatureProjectSpec : BaseProjectSpec() {
     override fun generateAdditionalFiles(rootDir: File) {
         val appModuleDir = rootDir.resolve("app").also { it.mkdirs() }
         val appMainDir = appModuleDir.resolve("src/main").also { it.mkdirs() }
-        
+
         val appModuleBuildGradle = appModuleDir.resolve("build.gradle")
         appModuleBuildGradle.writeText(getAppModuleBuildGradleContent())
 
@@ -128,10 +130,10 @@ open class DynamicFeatureProjectSpec : BaseProjectSpec() {
             mavenCentral()
         }
         android {
-            compileSdkVersion(${Versions.COMPILE_SDK})
+            compileSdkVersion(${versionCatalog.compileSdk})
         	defaultConfig {
-            	minSdkVersion(${Versions.MIN_SDK})
-            	targetSdkVersion(${Versions.TARGET_SDK})
+            	minSdkVersion(${versionCatalog.minSdk})
+            	targetSdkVersion(${versionCatalog.targetSdk})
             }
             compileOptions {
                 sourceCompatibility = JavaVersion.VERSION_1_8
@@ -139,7 +141,7 @@ open class DynamicFeatureProjectSpec : BaseProjectSpec() {
             }
             dynamicFeatures = [":module"]
         }
-            
+
     """.trimIndent()
 
     private fun getAppAndroidManifestContent() = """

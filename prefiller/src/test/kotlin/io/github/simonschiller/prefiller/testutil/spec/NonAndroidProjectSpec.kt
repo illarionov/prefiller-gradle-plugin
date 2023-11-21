@@ -16,9 +16,11 @@
 
 package io.github.simonschiller.prefiller.testutil.spec
 
-open class NonAndroidProjectSpec : BaseProjectSpec() {
+open class NonAndroidProjectSpec(
+    override val versionCatalog: VersionCatalog,
+) : BaseProjectSpec() {
 
-    override fun getRootBuildGradleContent(agpVersion: String) = """
+    override fun getRootBuildGradleContent() = """
         buildscript {
             repositories {
                 mavenLocal()
@@ -29,17 +31,17 @@ open class NonAndroidProjectSpec : BaseProjectSpec() {
                 classpath("io.github.simonschiller:prefiller:+")
 	        }
         }
-            
+
     """.trimIndent()
 
     override fun getModuleBuildGradleContent() = """
         apply plugin: "io.github.simonschiller.prefiller"
-            
+
         repositories {
             google()
             mavenCentral()
         }
-            
+
     """.trimIndent()
 
     override fun getEntityClassName() = "Person.java"
@@ -51,7 +53,7 @@ open class NonAndroidProjectSpec : BaseProjectSpec() {
             public String name;
             public int age;
         }
-            
+
     """.trimIndent()
 
     override fun getDatabaseClassName() = "PeopleDatabase.java"
@@ -60,7 +62,7 @@ open class NonAndroidProjectSpec : BaseProjectSpec() {
         package com.test;
 
         public abstract class PeopleDatabase {}
-            
+
     """.trimIndent()
 
     override fun toString() = "Non-Android project"

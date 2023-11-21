@@ -16,9 +16,11 @@
 
 package io.github.simonschiller.prefiller.testutil.spec
 
-open class KotlinKaptProjectSpec : KotlinProjectSpec() {
+open class KotlinKaptProjectSpec(
+    override val versionCatalog: VersionCatalog,
+) : KotlinProjectSpec() {
 
-    override fun getRootBuildGradleContent(agpVersion: String) = """
+    override fun getRootBuildGradleContent() = """
         buildscript {
             repositories {
                 mavenLocal()
@@ -26,12 +28,12 @@ open class KotlinKaptProjectSpec : KotlinProjectSpec() {
 		        mavenCentral()
 	        }
 	        dependencies {
-		        classpath("com.android.tools.build:gradle:$agpVersion")
-                classpath("${Dependencies.KOTLIN_GRADLE_PLUGIN}")
+		        classpath("com.android.tools.build:gradle:${versionCatalog.agpVersion}")
+                classpath("${versionCatalog.kotlinGradlePlugin}")
                 classpath("io.github.simonschiller:prefiller:+")
 	        }
         }
-            
+
     """.trimIndent()
 
     override fun getModuleBuildGradleContent() = """
@@ -39,16 +41,16 @@ open class KotlinKaptProjectSpec : KotlinProjectSpec() {
         apply plugin: "kotlin-android"
         apply plugin: "kotlin-kapt"
         apply plugin: "io.github.simonschiller.prefiller"
-            
+
         repositories {
             google()
             mavenCentral()
         }
         android {
-            compileSdkVersion(${Versions.COMPILE_SDK})
+            compileSdkVersion(${versionCatalog.compileSdk})
         	defaultConfig {
-            	minSdkVersion(${Versions.MIN_SDK})
-            	targetSdkVersion(${Versions.TARGET_SDK})
+            	minSdkVersion(${versionCatalog.minSdk})
+            	targetSdkVersion(${versionCatalog.targetSdk})
             }
             compileOptions {
                 sourceCompatibility = JavaVersion.VERSION_1_8
@@ -59,19 +61,19 @@ open class KotlinKaptProjectSpec : KotlinProjectSpec() {
                     arg("room.schemaLocation", projectDir.absolutePath + "/schemas")
                 }
             }
-        }    
+        }
         dependencies {
-            implementation("${Dependencies.KOTLIN_STDLIB}")
-            implementation("${Dependencies.ROOM_RUNTIME}")
-            kapt("${Dependencies.ROOM_COMPILER}")
-        }    
+            implementation("${versionCatalog.kotlinStdlib}")
+            implementation("${versionCatalog.roomRuntime}")
+            kapt("${versionCatalog.roomCompiler}")
+        }
         prefiller {
             database("people") {
                 classname.set("com.test.PeopleDatabase")
                 scripts.from(file("setup.sql"))
             }
         }
-            
+
     """.trimIndent()
 
     override fun toString() = "Kotlin project using KAPT"

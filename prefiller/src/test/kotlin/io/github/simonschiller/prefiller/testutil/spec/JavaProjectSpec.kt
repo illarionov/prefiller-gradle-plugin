@@ -16,9 +16,11 @@
 
 package io.github.simonschiller.prefiller.testutil.spec
 
-open class JavaProjectSpec : BaseProjectSpec() {
+open class JavaProjectSpec(
+    override val versionCatalog: VersionCatalog
+) : BaseProjectSpec() {
 
-    override fun getRootBuildGradleContent(agpVersion: String) = """
+    override fun getRootBuildGradleContent() = """
         buildscript {
             repositories {
                 mavenLocal()
@@ -26,27 +28,27 @@ open class JavaProjectSpec : BaseProjectSpec() {
 		        mavenCentral()
 	        }
 	        dependencies {
-		        classpath("com.android.tools.build:gradle:$agpVersion")
+		        classpath("com.android.tools.build:gradle:${versionCatalog.agpVersion}")
                 classpath("io.github.simonschiller:prefiller:+")
 	        }
         }
-            
+
     """.trimIndent()
 
     override fun getModuleBuildGradleContent() = """
         apply plugin: "com.android.application"
         apply plugin: "io.github.simonschiller.prefiller"
-            
+
         repositories {
             google()
             mavenCentral()
         }
         android {
-            compileSdkVersion(${Versions.COMPILE_SDK})
+            compileSdkVersion(${versionCatalog.compileSdk})
         	defaultConfig {
-            	minSdkVersion(${Versions.MIN_SDK})
-            	targetSdkVersion(${Versions.TARGET_SDK})
-            
+            	minSdkVersion(${versionCatalog.minSdk})
+            	targetSdkVersion(${versionCatalog.targetSdk})
+
                 javaCompileOptions {
                     annotationProcessorOptions {
                         arguments["room.schemaLocation"] = projectDir.absolutePath + "/schemas"
@@ -57,18 +59,18 @@ open class JavaProjectSpec : BaseProjectSpec() {
                 sourceCompatibility = JavaVersion.VERSION_1_8
                 targetCompatibility = JavaVersion.VERSION_1_8
             }
-        }    
+        }
         dependencies {
-            implementation("${Dependencies.ROOM_RUNTIME}")
-            annotationProcessor("${Dependencies.ROOM_COMPILER}")
-        }    
+            implementation("${versionCatalog.roomRuntime}")
+            annotationProcessor("${versionCatalog.roomCompiler}")
+        }
         prefiller {
             database("people") {
                 classname.set("com.test.PeopleDatabase")
                 scripts.from(file("setup.sql"))
             }
         }
-            
+
     """.trimIndent()
 
     override fun getEntityClassName() = "Person.java"
@@ -86,7 +88,7 @@ open class JavaProjectSpec : BaseProjectSpec() {
             public String name;
             public int age;
         }
-            
+
     """.trimIndent()
 
     override fun getDatabaseClassName() = "PeopleDatabase.java"
@@ -98,7 +100,7 @@ open class JavaProjectSpec : BaseProjectSpec() {
 
         @Database(entities = {Person.class}, version = 1)
         public abstract class PeopleDatabase extends RoomDatabase {}
-            
+
     """.trimIndent()
 
     override fun toString() = "Normal Java project"

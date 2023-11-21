@@ -16,38 +16,40 @@
 
 package io.github.simonschiller.prefiller.testutil.spec
 
-open class NoSchemaLocationJavaProjectSpec : JavaProjectSpec() {
+open class NoSchemaLocationJavaProjectSpec(
+    versionCatalog: VersionCatalog
+) : JavaProjectSpec(versionCatalog) {
 
     override fun getModuleBuildGradleContent() = """
         apply plugin: "com.android.application"
         apply plugin: "io.github.simonschiller.prefiller"
-            
+
         repositories {
             google()
             mavenCentral()
         }
         android {
-            compileSdkVersion(${Versions.COMPILE_SDK})
+            compileSdkVersion(${versionCatalog.compileSdk})
         	defaultConfig {
-            	minSdkVersion(${Versions.MIN_SDK})
-            	targetSdkVersion(${Versions.TARGET_SDK})
+            	minSdkVersion(${versionCatalog.minSdk})
+            	targetSdkVersion(${versionCatalog.targetSdk})
             }
             compileOptions {
                 sourceCompatibility = JavaVersion.VERSION_1_8
                 targetCompatibility = JavaVersion.VERSION_1_8
             }
-        }    
+        }
         dependencies {
-            implementation("${Dependencies.ROOM_RUNTIME}")
-            annotationProcessor("${Dependencies.ROOM_COMPILER}")
-        }    
+            implementation("${versionCatalog.roomRuntime}")
+            annotationProcessor("${versionCatalog.roomCompiler}")
+        }
         prefiller {
             database("people") {
                 classname.set("com.test.PeopleDatabase")
                 scripts.from(file("setup.sql"))
             }
         }
-            
+
     """.trimIndent()
 
     override fun toString() = "Java project without schema location configured"

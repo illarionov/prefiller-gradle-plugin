@@ -25,6 +25,7 @@ import io.github.simonschiller.prefiller.testutil.spec.KotlinKspProjectSpec
 import io.github.simonschiller.prefiller.testutil.spec.NoSchemaLocationJavaProjectSpec
 import io.github.simonschiller.prefiller.testutil.spec.NoSchemaLocationKotlinKaptProjectSpec
 import io.github.simonschiller.prefiller.testutil.spec.NoSchemaLocationKotlinKspProjectSpec
+import io.github.simonschiller.prefiller.testutil.spec.VersionCatalog
 import org.junit.jupiter.api.extension.ExtensionContext
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.ArgumentsProvider
@@ -32,12 +33,11 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.stream.Stream
 
-open class TestVersions : ArgumentsProvider {
+object TestVersions {
     private val logger: Logger = LoggerFactory.getLogger(TestVersions::class.java)
 
     // See https://gradle.org/releases
     private val gradleVersions = listOf(
-        "8.4",
         "8.4",
         "8.3",
         "8.2.1",
@@ -73,17 +73,19 @@ open class TestVersions : ArgumentsProvider {
         "4.2.2",
     )
 
-    override fun provideArguments(context: ExtensionContext): Stream<out Arguments> {
-        val arguments = getCompatibleGradleAgpVersions()
-            .map { (gradleVersion, agpVersion) -> Arguments.of(gradleVersion.toString(), agpVersion.toString()) }
-            .toList()
-
-        require(arguments.isNotEmpty()) {
-            "Found no compatible AGP and Gradle version combination, check your supplied arguments."
+    fun getTestVariants(): List<VersionCatalog> = getCompatibleGradleAgpVersions()
+        .map { (gradleVersion, agpVersion) ->
+            VersionCatalog(
+                gradleVersion = gradleVersion.toString(),
+                agpVersion = agpVersion.toString(),
+            )
         }
-
-        return arguments.stream()
-    }
+        .toList()
+        .also {
+            require(it.isNotEmpty()) {
+                "Found no compatible AGP and Gradle version combination, check your supplied arguments."
+            }
+        }
 
     private fun getCompatibleGradleAgpVersions(): Sequence<Pair<Version, Version>> {
         val (gradleCompatibleVersions, gradleIncompatibleVersions) = gradleVersions().partition {
@@ -94,7 +96,7 @@ open class TestVersions : ArgumentsProvider {
             logger.warn(
                 "Gradle versions {} cannot be run on the current JVM `{}`",
                 gradleIncompatibleVersions.joinToString(),
-                Runtime.version()
+                Runtime.version(),
             )
         }
 
@@ -106,7 +108,7 @@ open class TestVersions : ArgumentsProvider {
             logger.warn(
                 "Android Gradle Plugin versions {} cannot be run on the current JVM `{}`",
                 agpIncompatibleVersions.joinToString(),
-                Runtime.version()
+                Runtime.version(),
             )
         }
 
@@ -140,41 +142,49 @@ open class TestVersions : ArgumentsProvider {
             listOf(Version.parse(agpVersion))
         }
     }
-
-    // Checks if a AGP version (receiver) is compatible KSP
-    protected fun Version.agpIsCompatibleWithKsp(): Boolean {
-        return baseVersion() >= Version.parse("4.1.0")
-    }
 }
 
-class LanguageTestVersions : ArgumentsProvider, TestVersions() {
+class TestVariants : ArgumentsProvider {
+    override fun provideArguments(context: ExtensionContext?): Stream<Arguments> = TestVersions.getTestVariants()
+        .map { Arguments.of(it) }
+        .stream()
+}
 
+class LanguageTestVersions : ArgumentsProvider {
     override fun provideArguments(context: ExtensionContext): Stream<out Arguments> {
-        val arguments = mutableListOf<Arguments>()
-        super.provideArguments(context).forEach { argument ->
-            val (gradleVersion, agpVersion) = argument.get()
-            arguments += Arguments.of(gradleVersion, agpVersion, JavaProjectSpec())
-            arguments += Arguments.of(gradleVersion, agpVersion, KotlinKaptProjectSpec())
-            if (Version.parse(agpVersion as String).agpIsCompatibleWithKsp()) {
-                arguments += Arguments.of(gradleVersion, agpVersion, KotlinKspProjectSpec())
+        return TestVersions.getTestVariants()
+            .flatMap { versions ->
+                getTestProjectSpecs(versions).map { Arguments.of(it) }
             }
+            .stream()
+    }
+
+    private fun getTestProjectSpecs(versions: VersionCatalog) = buildList {
+        add(JavaProjectSpec(versions))
+        add(KotlinKaptProjectSpec(versions))
+        if (versions.agpIsCompatibleWithKsp()) {
+            add(KotlinKspProjectSpec(versions))
         }
-        return arguments.stream()
     }
 }
 
-class NoSchemaLocationTestVersions : ArgumentsProvider, TestVersions() {
-
+class NoSchemaLocationTestVersions : ArgumentsProvider {
     override fun provideArguments(context: ExtensionContext): Stream<out Arguments> {
-        val arguments = mutableListOf<Arguments>()
-        super.provideArguments(context).forEach { argument ->
-            val (gradleVersion, agpVersion) = argument.get()
-            arguments += Arguments.of(gradleVersion, agpVersion, NoSchemaLocationJavaProjectSpec())
-            arguments += Arguments.of(gradleVersion, agpVersion, NoSchemaLocationKotlinKaptProjectSpec())
-            if (Version.parse(agpVersion as String).agpIsCompatibleWithKsp()) {
-                arguments += Arguments.of(gradleVersion, agpVersion, NoSchemaLocationKotlinKspProjectSpec())
+        return TestVersions.getTestVariants()
+            .flatMap { versions ->
+                getTestProjectSpecs(versions).map { Arguments.of(it) }
             }
+            .stream()
+    }
+    private fun getTestProjectSpecs(versions: VersionCatalog) = buildList {
+        add(NoSchemaLocationJavaProjectSpec(versions))
+        add(NoSchemaLocationKotlinKaptProjectSpec(versions))
+        if (versions.agpIsCompatibleWithKsp()) {
+            add(NoSchemaLocationKotlinKspProjectSpec(versions))
         }
-        return arguments.stream()
     }
 }
+
+private fun VersionCatalog.agpIsCompatibleWithKsp(): Boolean = AgpVersionCompatibility.agpIsCompatibleWithKsp(
+    Version.parse(agpVersion)
+)

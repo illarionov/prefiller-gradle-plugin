@@ -3,6 +3,8 @@ package io.github.simonschiller.prefiller.testutil
 import io.github.simonschiller.prefiller.internal.util.Version
 
 internal object GradleVersionCompatibility {
+    const val DEFAULT_GRADLE_VERSION = "8.3"
+
     // Checks if a Gradle version can run on the current JVM
     fun gradleIsCompatibleWithRuntime(gradleVersion: Version): Boolean {
         val jvmVersion = Runtime.version().version()[0]

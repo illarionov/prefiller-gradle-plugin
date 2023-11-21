@@ -20,8 +20,9 @@ import com.google.common.truth.Truth.assertThat
 import io.github.simonschiller.prefiller.internal.util.Version
 import io.github.simonschiller.prefiller.testutil.LanguageTestVersions
 import io.github.simonschiller.prefiller.testutil.NoSchemaLocationTestVersions
+import io.github.simonschiller.prefiller.testutil.spec.VersionCatalog
 import io.github.simonschiller.prefiller.testutil.ProjectExtension
-import io.github.simonschiller.prefiller.testutil.TestVersions
+import io.github.simonschiller.prefiller.testutil.TestVariants
 import io.github.simonschiller.prefiller.testutil.outcomeOf
 import io.github.simonschiller.prefiller.testutil.spec.DynamicFeatureProjectSpec
 import io.github.simonschiller.prefiller.testutil.spec.NonAndroidProjectSpec
@@ -38,17 +39,17 @@ class PrefillerIntegrationTest {
     val project = ProjectExtension()
 
     @ParameterizedTest
-    @ArgumentsSource(TestVersions::class)
-    fun `Build fails if plugin is applied to non-Android projects`(gradleVersion: String, agpVersion: String) {
-        project.setup(gradleVersion, agpVersion, NonAndroidProjectSpec())
+    @ArgumentsSource(TestVariants::class)
+    fun `Build fails if plugin is applied to non-Android projects`(versionCatalog: VersionCatalog) {
+        project.setup(NonAndroidProjectSpec(versionCatalog))
         val result = project.run("clean", expectFailure = true)
         assertThat(result.output).contains("Prefiller is only applicable to Android projects")
     }
 
     @ParameterizedTest
     @ArgumentsSource(LanguageTestVersions::class)
-    fun `Build fails if schema directory is not found`(gradleVersion: String, agpVersion: String, projectSpec: ProjectSpec) {
-        project.setup(gradleVersion, agpVersion, projectSpec)
+    fun `Build fails if schema directory is not found`(projectSpec: ProjectSpec) {
+        project.setup(projectSpec)
 
         var content = project.moduleBuildGradle.readText()
         content = content.replace("com.test.PeopleDatabase", "com.test.InvalidDatabase")
@@ -60,8 +61,8 @@ class PrefillerIntegrationTest {
 
     @ParameterizedTest
     @ArgumentsSource(LanguageTestVersions::class)
-    fun `Build fails if SQL file is invalid`(gradleVersion: String, agpVersion: String, projectSpec: ProjectSpec) {
-        project.setup(gradleVersion, agpVersion, projectSpec)
+    fun `Build fails if SQL file is invalid`(projectSpec: ProjectSpec) {
+        project.setup(projectSpec)
         project.scriptFile.appendText("Normal text is not a valid SQL statement")
 
         val result = project.run("prefillPeopleDebugDatabase", expectFailure = true)
@@ -70,16 +71,16 @@ class PrefillerIntegrationTest {
 
     @ParameterizedTest
     @ArgumentsSource(NoSchemaLocationTestVersions::class)
-    fun `Build fails if schema location is not configured`(gradleVersion: String, agpVersion: String, projectSpec: ProjectSpec) {
-        project.setup(gradleVersion, agpVersion, projectSpec)
+    fun `Build fails if schema location is not configured`(projectSpec: ProjectSpec) {
+        project.setup(projectSpec)
         val result = project.run("prefillPeopleDebugDatabase", expectFailure = true)
         assertThat(result.output).contains("Could not find schema location")
     }
 
     @ParameterizedTest
     @ArgumentsSource(LanguageTestVersions::class)
-    fun `Pre-filled database file is generated`(gradleVersion: String, agpVersion: String, projectSpec: ProjectSpec) {
-        project.setup(gradleVersion, agpVersion, projectSpec)
+    fun `Pre-filled database file is generated`(projectSpec: ProjectSpec) {
+        project.setup(projectSpec)
         project.run("prefillPeopleDebugDatabase")
 
         val databaseFile = project.moduleDir.resolve("build/generated/prefiller/debug/people.db")
@@ -88,8 +89,8 @@ class PrefillerIntegrationTest {
 
     @ParameterizedTest
     @ArgumentsSource(LanguageTestVersions::class)
-    fun `Database is generated during normal build process`(gradleVersion: String, agpVersion: String, projectSpec: ProjectSpec) {
-        project.setup(gradleVersion, agpVersion, projectSpec)
+    fun `Database is generated during normal build process`(projectSpec: ProjectSpec) {
+        project.setup(projectSpec)
         project.run("assembleDebug")
 
         val databaseFile = project.moduleDir.resolve("build/generated/prefiller/debug/people.db")
@@ -98,11 +99,11 @@ class PrefillerIntegrationTest {
 
     @ParameterizedTest
     @ArgumentsSource(LanguageTestVersions::class)
-    fun `Generated database is registered correctly as Android asset`(gradleVersion: String, agpVersion: String, projectSpec: ProjectSpec) {
-        project.setup(gradleVersion, agpVersion, projectSpec)
+    fun `Generated database is registered correctly as Android asset`(projectSpec: ProjectSpec) {
+        project.setup(projectSpec)
         project.run("mergeDebugAssets")
 
-        val agpBaseVersion = Version.parse(agpVersion).baseVersion()
+        val agpBaseVersion = Version.parse(projectSpec.versionCatalog.agpVersion).baseVersion()
         val mergedAssetsPath = when {
             agpBaseVersion >= Version.parse("7.1.0") -> "assets/debug/mergeDebugAssets"
             else -> "merged_assets/debug/out"
@@ -113,8 +114,8 @@ class PrefillerIntegrationTest {
 
     @ParameterizedTest
     @ArgumentsSource(LanguageTestVersions::class)
-    fun `Up-to-date checks work correctly`(gradleVersion: String, agpVersion: String, projectSpec: ProjectSpec) {
-        project.setup(gradleVersion, agpVersion, projectSpec)
+    fun `Up-to-date checks work correctly`(projectSpec: ProjectSpec) {
+        project.setup(projectSpec)
 
         var result = project.run("prefillPeopleDebugDatabase")
         assertThat(result.tasks.outcomeOf("prefillPeopleDebugDatabase")).isEqualTo(TaskOutcome.SUCCESS)
@@ -135,9 +136,9 @@ class PrefillerIntegrationTest {
     }
 
     @ParameterizedTest
-    @ArgumentsSource(TestVersions::class)
-    fun `Dynamic feature modules work correctly`(gradleVersion: String, agpVersion: String) {
-        project.setup(gradleVersion, agpVersion, DynamicFeatureProjectSpec())
+    @ArgumentsSource(TestVariants::class)
+    fun `Dynamic feature modules work correctly`(versionCatalog: VersionCatalog) {
+        project.setup(DynamicFeatureProjectSpec(versionCatalog))
         project.run(":module:prefillPeopleDebugDatabase")
 
         val databaseFile = project.moduleDir.resolve("build/generated/prefiller/debug/people.db")

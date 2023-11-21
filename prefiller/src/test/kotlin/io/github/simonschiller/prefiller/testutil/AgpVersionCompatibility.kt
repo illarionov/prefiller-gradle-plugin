@@ -33,4 +33,9 @@ internal object AgpVersionCompatibility {
 
         else -> false
     }
+
+    // Checks if a AGP version is compatible KSP
+    fun agpIsCompatibleWithKsp(agpVersion: Version): Boolean {
+        return agpVersion.baseVersion() >= Version.parse("4.1.0")
+    }
 }
