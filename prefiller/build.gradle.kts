@@ -93,29 +93,16 @@ tasks.withType<Test>().configureEach {
 
     jvmArgs("-XX:MaxMetaspaceSize=2g")
 
+    javaLauncher = javaToolchains.launcherFor {
+        languageVersion = providers.environmentVariable("TEST_JDK_VERSION")
+            .map { JavaLanguageVersion.of(it.toInt())  }
+            .orElse(JavaLanguageVersion.of(17))
+    }
+
     testLogging {
         events("passed", "skipped", "failed")
         exceptionFormat = TestExceptionFormat.FULL
     }
-}
-
-val testTask = tasks.named<Test>("test")
-testTask.configure {
-    javaLauncher = javaToolchains.launcherFor {
-        languageVersion = JavaLanguageVersion.of(17)
-    }
-}
-
-tasks.register<Test>("testJdk11") {
-    description = "Runs tests on JDK 11"
-    group = LifecycleBasePlugin.VERIFICATION_GROUP
-
-    javaLauncher = javaToolchains.launcherFor {
-        languageVersion = JavaLanguageVersion.of(11)
-    }
-
-    classpath = testTask.get().classpath
-    testClassesDirs = testTask.get().testClassesDirs
 }
 
 tasks.withType<AntlrTask>().configureEach {
