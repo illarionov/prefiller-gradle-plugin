@@ -19,8 +19,8 @@ package io.github.simonschiller.prefiller.testutil.spec
 import java.io.File
 
 open class DynamicFeatureProjectSpec(
-    override val versionCatalog: VersionCatalog,
-) : BaseProjectSpec() {
+    versionCatalog: VersionCatalog,
+) : BaseProjectSpec(versionCatalog) {
 
     override fun getRootBuildGradleContent() = """
         buildscript {

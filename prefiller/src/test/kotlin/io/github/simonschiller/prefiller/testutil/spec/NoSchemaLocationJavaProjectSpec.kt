@@ -30,6 +30,7 @@ open class NoSchemaLocationJavaProjectSpec(
         }
         android {
             compileSdkVersion(${versionCatalog.compileSdk})
+            ${getNamespaceContent()}
         	defaultConfig {
             	minSdkVersion(${versionCatalog.minSdk})
             	targetSdkVersion(${versionCatalog.targetSdk})

@@ -17,8 +17,8 @@
 package io.github.simonschiller.prefiller.testutil.spec
 
 open class JavaProjectSpec(
-    override val versionCatalog: VersionCatalog,
-) : BaseProjectSpec() {
+    versionCatalog: VersionCatalog,
+) : BaseProjectSpec(versionCatalog) {
 
     override fun getRootBuildGradleContent() = """
         buildscript {
@@ -45,6 +45,7 @@ open class JavaProjectSpec(
         }
         android {
             compileSdkVersion(${versionCatalog.compileSdk})
+            ${getNamespaceContent()}
         	defaultConfig {
             	minSdkVersion(${versionCatalog.minSdk})
             	targetSdkVersion(${versionCatalog.targetSdk})

@@ -17,15 +17,16 @@
 package io.github.simonschiller.prefiller.testutil
 
 import io.github.simonschiller.prefiller.internal.util.Version
-import io.github.simonschiller.prefiller.testutil.compatibility.AgpVersionCompatibility
 import io.github.simonschiller.prefiller.testutil.compatibility.AgpVersionCompatibility.agpIsCompatibleWithGradle
+import io.github.simonschiller.prefiller.testutil.compatibility.AgpVersionCompatibility.agpIsCompatibleWithKsp
 import io.github.simonschiller.prefiller.testutil.compatibility.AgpVersionCompatibility.agpIsCompatibleWithRuntime
-import io.github.simonschiller.prefiller.testutil.compatibility.AgpVersionCompatibility.getCompatibleCompileSdk
+import io.github.simonschiller.prefiller.testutil.compatibility.AgpVersionCompatibility.getCompatibleAndroidApiLevel
 import io.github.simonschiller.prefiller.testutil.compatibility.AgpVersionCompatibility.getCompatibleJavaVersion
 import io.github.simonschiller.prefiller.testutil.compatibility.GradleVersionCompatibility.gradleIsCompatibleWithRuntime
 import io.github.simonschiller.prefiller.testutil.compatibility.KotlinVersionCompatibility.getKotlinCompatibleVersion
 import io.github.simonschiller.prefiller.testutil.compatibility.KotlinVersionCompatibility.hasCompatibleKotlinVersion
 import io.github.simonschiller.prefiller.testutil.compatibility.KspVersionCompatibility.getKotlinKspVersion
+import io.github.simonschiller.prefiller.testutil.compatibility.RoomVersionCompatibility.getCompatibleRoomVersion
 import io.github.simonschiller.prefiller.testutil.spec.JavaProjectSpec
 import io.github.simonschiller.prefiller.testutil.spec.KotlinKaptProjectSpec
 import io.github.simonschiller.prefiller.testutil.spec.KotlinKspProjectSpec
@@ -80,15 +81,18 @@ object TestVersions {
                 ?: error("No Kotlin for `$gradleVersion` - `$agpVersion`")
             val kspVersion = getKotlinKspVersion(kotlinVersion)
                 ?: error("No Kotlin KSP for Kotlin `$kotlinVersion`")
-            val compileSdk = getCompatibleCompileSdk(agpVersion).toString()
+            val compileTargetSdk = getCompatibleAndroidApiLevel(agpVersion)
+            val room = getCompatibleRoomVersion(compileTargetSdk).toString()
             VersionCatalog(
                 gradleVersion = gradleVersion.toString(),
                 agpVersion = agpVersion.toString(),
-                compileSdk = compileSdk,
-                targetSdk = compileSdk,
+                compileSdk = compileTargetSdk.toString(),
+                targetSdk = compileTargetSdk.toString(),
                 kotlinVersion = kotlinVersion.toString(),
                 kspVersion = kspVersion.toString(),
                 compatibilityJavaVersion = getCompatibleJavaVersion(agpVersion),
+                roomCompilerVersion = room,
+                roomRuntimeVersion = room,
             )
         }
         .toList()
@@ -197,7 +201,3 @@ class NoSchemaLocationTestVersions : ArgumentsProvider {
         }
     }
 }
-
-private fun VersionCatalog.agpIsCompatibleWithKsp(): Boolean = AgpVersionCompatibility.agpIsCompatibleWithKsp(
-    Version.parse(agpVersion),
-)

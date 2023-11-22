@@ -1,23 +1,49 @@
 package io.github.simonschiller.prefiller.testutil.compatibility
 
-import Versions
 import io.github.simonschiller.prefiller.internal.util.Version
+import io.github.simonschiller.prefiller.testutil.compatibility.GradleVersionCompatibility.GRADLE_6_1_1
+import io.github.simonschiller.prefiller.testutil.compatibility.GradleVersionCompatibility.GRADLE_6_5
+import io.github.simonschiller.prefiller.testutil.compatibility.GradleVersionCompatibility.GRADLE_6_7_1
+import io.github.simonschiller.prefiller.testutil.compatibility.GradleVersionCompatibility.GRADLE_7_0
+import io.github.simonschiller.prefiller.testutil.compatibility.GradleVersionCompatibility.GRADLE_7_2
+import io.github.simonschiller.prefiller.testutil.compatibility.GradleVersionCompatibility.GRADLE_7_3_3
+import io.github.simonschiller.prefiller.testutil.compatibility.GradleVersionCompatibility.GRADLE_7_4
+import io.github.simonschiller.prefiller.testutil.compatibility.GradleVersionCompatibility.GRADLE_7_5
+import io.github.simonschiller.prefiller.testutil.compatibility.GradleVersionCompatibility.GRADLE_8_0
+import io.github.simonschiller.prefiller.testutil.compatibility.GradleVersionCompatibility.GRADLE_8_2
+import io.github.simonschiller.prefiller.testutil.compatibility.GradleVersionCompatibility.GRADLE_8_3
+import io.github.simonschiller.prefiller.testutil.spec.VersionCatalog
 import org.gradle.api.JavaVersion
 
 internal object AgpVersionCompatibility {
-    // Checks if a AGP version (receiver) can run on the current JVM
+    val AGP_4_0_0 = Version(4, 0, 0)
+    val AGP_4_1_0 = Version(4, 1, 0)
+    val AGP_4_2_0 = Version(4, 2, 0)
+    val AGP_7_0_0 = Version(7, 0, 0)
+    val AGP_7_0_2 = Version(7, 0, 2)
+    val AGP_7_0_4 = Version(7, 0, 4)
+    val AGP_7_1_0 = Version(7, 1, 0)
+    val AGP_7_2_0 = Version(7, 2, 0)
+    val AGP_7_3_0 = Version(7, 3, 0)
+    val AGP_7_4_0 = Version(7, 4, 0)
+    val AGP_8_0_0 = Version(8, 0, 0)
+    val AGP_8_1_1 = Version(8, 1, 1)
+    val AGP_8_2_0 = Version(8, 2, 0)
+    val AGP_8_3_0 = Version(8, 3, 0)
+
+    // Checks if a AGP version [agpVersion] can run on the current JVM
     fun agpIsCompatibleWithRuntime(agpVersion: Version): Boolean {
         val jvmVersion = Runtime.version().version()[0]
         return when {
-            agpVersion >= Version(8, 0) -> jvmVersion >= 17
-            agpVersion >= Version(7, 0) -> jvmVersion >= 11
-            else -> jvmVersion >= 8
+            agpVersion >= AGP_8_0_0 -> jvmVersion >= 17
+            agpVersion >= AGP_7_0_0 -> jvmVersion >= 11
+            else -> jvmVersion in 8..11
         }
     }
 
     fun getCompatibleJavaVersion(agpVersion: Version): JavaVersion {
         return when {
-            agpVersion >= Version(7, 0) -> JavaVersion.VERSION_11
+            agpVersion >= AGP_7_0_0 -> JavaVersion.VERSION_11
             else -> JavaVersion.VERSION_1_8
         }
     }
@@ -28,43 +54,31 @@ internal object AgpVersionCompatibility {
         agpVersion: Version,
         gradleVersion: Version,
     ) = when {
-        agpVersion >= Version.parse("8.3.0") -> gradleVersion >= Version.parse("8.3")
-        agpVersion >= Version.parse("8.2.0") -> gradleVersion >= Version.parse("8.2")
-        agpVersion >= Version.parse("8.0.0") -> gradleVersion >= Version.parse("8.0")
-        agpVersion >= Version.parse("7.4.0") -> gradleVersion >= Version.parse("7.5")
-        agpVersion >= Version.parse("7.3.0") -> gradleVersion >= Version.parse("7.4") &&
-                gradleVersion < Version.parse("8.0")
-
-        agpVersion >= Version.parse("7.2.0") -> gradleVersion >= Version.parse("7.3.3") &&
-                gradleVersion < Version.parse("8.0")
-
-        agpVersion >= Version.parse("7.1.0") -> gradleVersion >= Version.parse("7.2") &&
-                gradleVersion < Version.parse("8.0")
-
-        agpVersion >= Version.parse("7.0.0") -> gradleVersion >= Version.parse("7.0") &&
-                gradleVersion < Version.parse("8.0")
-
-        agpVersion >= Version.parse("4.2.0") -> gradleVersion >= Version.parse("6.7.1") &&
-                gradleVersion < Version.parse("8.0")
-
-        agpVersion >= Version.parse("4.1.0") -> gradleVersion >= Version.parse("6.5") &&
-                gradleVersion < Version.parse("7.0")
-
-        agpVersion >= Version.parse("4.0.0") -> gradleVersion >= Version.parse("6.1.1") &&
-                gradleVersion < Version.parse("7.0")
-
+        agpVersion >= AGP_8_3_0 -> gradleVersion >= GRADLE_8_3
+        agpVersion >= AGP_8_2_0 -> gradleVersion >= GRADLE_8_2
+        agpVersion >= AGP_8_0_0 -> gradleVersion >= GRADLE_8_0
+        agpVersion >= AGP_7_4_0 -> gradleVersion >= GRADLE_7_5
+        agpVersion >= AGP_7_3_0 -> gradleVersion >= GRADLE_7_4 && gradleVersion < GRADLE_8_0
+        agpVersion >= AGP_7_2_0 -> gradleVersion >= GRADLE_7_3_3 && gradleVersion < GRADLE_8_0
+        agpVersion >= AGP_7_1_0 -> gradleVersion >= GRADLE_7_2 && gradleVersion < GRADLE_8_0
+        agpVersion >= AGP_7_0_0 -> gradleVersion >= GRADLE_7_0 && gradleVersion < GRADLE_8_0
+        agpVersion >= AGP_4_2_0 -> gradleVersion >= GRADLE_6_7_1 && gradleVersion < GRADLE_8_0
+        agpVersion >= AGP_4_1_0 -> gradleVersion >= GRADLE_6_5 && gradleVersion < GRADLE_7_0
+        agpVersion >= AGP_4_0_0 -> gradleVersion >= GRADLE_6_1_1 && gradleVersion < GRADLE_7_0
         else -> false
     }
 
-    // Checks if a AGP version is compatible KSP
-    fun agpIsCompatibleWithKsp(agpVersion: Version): Boolean {
-        return agpVersion.baseVersion() >= Version.parse("4.1.0")
-    }
-
-    fun getCompatibleCompileSdk(
+    // https://developer.android.com/build/releases/gradle-plugin#api-level-support
+    fun getCompatibleAndroidApiLevel(
         agpVersion: Version,
     ): Int = when {
-        agpVersion >= Version(8, 0, 0) -> Versions.COMPILE_SDK
-        else -> 33
+        agpVersion >= AGP_8_1_1 -> 34
+        agpVersion >= AGP_7_2_0 -> 33
+        else -> 32
     }
+
+    // Checks if a AGP version is compatible KSP
+    internal fun VersionCatalog.agpIsCompatibleWithKsp(): Boolean = Version.parse(agpVersion) >= AGP_4_1_0
+
+    internal fun VersionCatalog.agpHasNamespaceSupport(): Boolean = Version.parse(agpVersion) >= AGP_7_0_0
 }

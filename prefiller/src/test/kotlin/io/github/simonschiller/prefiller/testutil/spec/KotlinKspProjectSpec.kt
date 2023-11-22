@@ -49,6 +49,7 @@ open class KotlinKspProjectSpec(
         }
         android {
             compileSdkVersion(${versionCatalog.compileSdk})
+            ${getNamespaceContent()}
         	defaultConfig {
             	minSdkVersion(${versionCatalog.minSdk})
             	targetSdkVersion(${versionCatalog.targetSdk})

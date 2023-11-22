@@ -32,6 +32,7 @@ open class NoSchemaLocationKotlinKspProjectSpec(
         }
         android {
             compileSdkVersion(${versionCatalog.compileSdk})
+            ${getNamespaceContent()}
         	defaultConfig {
             	minSdkVersion(${versionCatalog.minSdk})
             	targetSdkVersion(${versionCatalog.targetSdk})

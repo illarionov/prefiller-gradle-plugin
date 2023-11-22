@@ -20,13 +20,14 @@ import com.google.common.truth.Truth.assertThat
 import io.github.simonschiller.prefiller.internal.util.Version
 import io.github.simonschiller.prefiller.testutil.LanguageTestVersions
 import io.github.simonschiller.prefiller.testutil.NoSchemaLocationTestVersions
-import io.github.simonschiller.prefiller.testutil.spec.VersionCatalog
 import io.github.simonschiller.prefiller.testutil.ProjectExtension
 import io.github.simonschiller.prefiller.testutil.TestVariants
+import io.github.simonschiller.prefiller.testutil.compatibility.AgpVersionCompatibility.AGP_7_1_0
 import io.github.simonschiller.prefiller.testutil.outcomeOf
 import io.github.simonschiller.prefiller.testutil.spec.DynamicFeatureProjectSpec
 import io.github.simonschiller.prefiller.testutil.spec.NonAndroidProjectSpec
 import io.github.simonschiller.prefiller.testutil.spec.ProjectSpec
+import io.github.simonschiller.prefiller.testutil.spec.VersionCatalog
 import org.gradle.testkit.runner.TaskOutcome
 import org.junit.jupiter.api.extension.RegisterExtension
 import org.junit.jupiter.params.ParameterizedTest
@@ -105,7 +106,7 @@ class PrefillerIntegrationTest {
 
         val agpBaseVersion = Version.parse(projectSpec.versionCatalog.agpVersion).baseVersion()
         val mergedAssetsPath = when {
-            agpBaseVersion >= Version.parse("7.1.0") -> "assets/debug/mergeDebugAssets"
+            agpBaseVersion >= AGP_7_1_0 -> "assets/debug/mergeDebugAssets"
             else -> "merged_assets/debug/out"
         }
         val mergedAssetsDir = project.moduleDir.resolve("build/intermediates/$mergedAssetsPath")

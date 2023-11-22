@@ -17,10 +17,11 @@
 package io.github.simonschiller.prefiller.testutil.spec
 
 import io.github.simonschiller.prefiller.internal.util.Version
+import io.github.simonschiller.prefiller.testutil.compatibility.AgpVersionCompatibility.AGP_7_0_0
 
 abstract class KotlinProjectSpec(
-    override val versionCatalog: VersionCatalog,
-) : BaseProjectSpec() {
+    versionCatalog: VersionCatalog,
+) : BaseProjectSpec(versionCatalog) {
 
     override fun getEntityClassName() = "Person.kt"
 
@@ -50,7 +51,7 @@ abstract class KotlinProjectSpec(
     """.trimIndent()
 
     protected fun getKotlinTaskSetupContent(): String =
-        if (Version.parse(versionCatalog.agpVersion) >= Version(7, 0, 0)) {
+        if (Version.parse(versionCatalog.agpVersion) >= AGP_7_0_0) {
             """
         tasks
             .withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask.class)

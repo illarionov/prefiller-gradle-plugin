@@ -1,9 +1,26 @@
 package io.github.simonschiller.prefiller.testutil.compatibility
 
-import Versions
 import io.github.simonschiller.prefiller.internal.util.Version
+import io.github.simonschiller.prefiller.testutil.compatibility.AgpVersionCompatibility.AGP_7_0_2
+import io.github.simonschiller.prefiller.testutil.compatibility.AgpVersionCompatibility.AGP_7_0_4
+import io.github.simonschiller.prefiller.testutil.compatibility.GradleVersionCompatibility.GRADLE_6_1_1
+import io.github.simonschiller.prefiller.testutil.compatibility.GradleVersionCompatibility.GRADLE_6_7_1
+import io.github.simonschiller.prefiller.testutil.compatibility.GradleVersionCompatibility.GRADLE_6_8_3
 
 internal object KotlinVersionCompatibility {
+    val KOTLIN_1_7_0 = Version(1, 7, 0)
+    val KOTLIN_1_7_10 = Version(1, 7, 10)
+    val KOTLIN_1_7_20 = Version(1, 7, 20)
+    val KOTLIN_1_7_21 = Version(1, 7, 21)
+    val KOTLIN_1_7_22 = Version(1, 7, 22)
+    val KOTLIN_1_8_0 = Version(1, 8, 0)
+    val KOTLIN_1_8_10 = Version(1, 8, 10)
+    val KOTLIN_1_8_20 = Version(1, 8, 20)
+    val KOTLIN_1_8_21 = Version(1, 8, 21)
+    val KOTLIN_1_8_22 = Version(1, 8, 22)
+    val KOTLIN_1_9_0 = Version(1, 9, 0)
+    val KOTLIN_1_9_10 = Version(1, 9, 10)
+    val KOTLIN_1_9_20 = Version(1, 9, 20)
 
     fun hasCompatibleKotlinVersion(
         agpVersion: Version,
@@ -15,21 +32,21 @@ internal object KotlinVersionCompatibility {
         agpVersion: Version,
         gradleVersion: Version,
     ): Version? = when {
-        gradleVersion >= Version(6, 8, 3) -> {
-            Version.parse(Versions.KOTLIN)
+        gradleVersion >= GRADLE_6_8_3 -> {
+            KOTLIN_1_9_20
         }
 
-        gradleVersion >= Version(6, 7, 1) -> {
-            if (agpVersion <= Version(7, 0, 4)) {
-                Version(1, 7, 22)
+        gradleVersion >= GRADLE_6_7_1 -> {
+            if (agpVersion <= AGP_7_0_4) {
+                KOTLIN_1_7_22
             } else {
                 null
             }
         }
 
-        gradleVersion >= Version(6, 1, 1) -> {
-            if (agpVersion <= Version(7, 0, 2)) {
-                Version(1, 7, 10)
+        gradleVersion >= GRADLE_6_1_1 -> {
+            if (agpVersion <= AGP_7_0_2) {
+                KOTLIN_1_7_10
             } else {
                 null
             }

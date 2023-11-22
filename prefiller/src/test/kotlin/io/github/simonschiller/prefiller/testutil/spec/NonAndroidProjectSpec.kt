@@ -17,8 +17,8 @@
 package io.github.simonschiller.prefiller.testutil.spec
 
 open class NonAndroidProjectSpec(
-    override val versionCatalog: VersionCatalog,
-) : BaseProjectSpec() {
+    versionCatalog: VersionCatalog,
+) : BaseProjectSpec(versionCatalog) {
 
     override fun getRootBuildGradleContent() = """
         buildscript {
