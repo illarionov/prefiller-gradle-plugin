@@ -16,6 +16,7 @@
 
 package io.github.simonschiller.prefiller.testutil.spec
 
+import io.github.simonschiller.prefiller.testutil.compatibility.AgpVersionCompatibility.agpHasNamespaceSupport
 import java.io.File
 
 open class DynamicFeatureProjectSpec(
@@ -132,6 +133,7 @@ open class DynamicFeatureProjectSpec(
         }
         android {
             compileSdkVersion(${versionCatalog.compileSdk})
+            ${getAppNamespaceContent()}
         	defaultConfig {
             	minSdkVersion(${versionCatalog.minSdk})
             	targetSdkVersion(${versionCatalog.targetSdk})
@@ -145,9 +147,21 @@ open class DynamicFeatureProjectSpec(
 
     """.trimIndent()
 
-    private fun getAppAndroidManifestContent() = """
-        <manifest package="com.test" />
-    """.trimIndent()
+    private fun getAppNamespaceContent(): String = if (versionCatalog.agpHasNamespaceSupport()) {
+        """
+            namespace("com.test.app")
+        """.trimIndent()
+    } else {
+        ""
+    }
+
+    private fun getAppAndroidManifestContent() = if (!versionCatalog.agpHasNamespaceSupport()) {
+        """
+            <manifest package="com.test" />
+        """.trimIndent()
+    } else {
+        "<manifest />"
+    }
 
     override fun toString() = "Dynamic feature module project ($versionCatalog)"
 }
