@@ -26,6 +26,7 @@ import io.github.simonschiller.prefiller.testutil.compatibility.GradleVersionCom
 import io.github.simonschiller.prefiller.testutil.compatibility.KotlinVersionCompatibility.getKotlinCompatibleVersion
 import io.github.simonschiller.prefiller.testutil.compatibility.KotlinVersionCompatibility.hasCompatibleKotlinVersion
 import io.github.simonschiller.prefiller.testutil.compatibility.KspVersionCompatibility.getKotlinKspVersion
+import io.github.simonschiller.prefiller.testutil.compatibility.RoomVersionCompatibility.getCompatibleAndroidxCoreRuntimeVersion
 import io.github.simonschiller.prefiller.testutil.compatibility.RoomVersionCompatibility.getCompatibleRoomVersion
 import io.github.simonschiller.prefiller.testutil.spec.JavaProjectSpec
 import io.github.simonschiller.prefiller.testutil.spec.KotlinKaptProjectSpec
@@ -93,6 +94,7 @@ object TestVersions {
                 compatibilityJavaVersion = getCompatibleJavaVersion(agpVersion),
                 roomCompilerVersion = room,
                 roomRuntimeVersion = room,
+                androidxCoreRuntimeVersion = getCompatibleAndroidxCoreRuntimeVersion(compileTargetSdk).toString()
             )
         }
         .toList()

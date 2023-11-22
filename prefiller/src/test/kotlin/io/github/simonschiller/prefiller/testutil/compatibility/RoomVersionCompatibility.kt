@@ -4,6 +4,16 @@ import Versions
 import io.github.simonschiller.prefiller.internal.util.Version
 
 internal object RoomVersionCompatibility {
+    fun getCompatibleAndroidxCoreRuntimeVersion(
+        compileSdkVersion: Int,
+    ): Version {
+        return if (compileSdkVersion >= 33) {
+            Version.parse(Versions.CORE_RUNTIME)
+        } else {
+            Version(2, 1, 0)
+        }
+    }
+
     fun getCompatibleRoomVersion(
         compileSdkVersion: Int,
         jvmVersion: Int = Runtime.version().version()[0],
