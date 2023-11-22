@@ -15,7 +15,9 @@ data class VersionCatalog(
     val kspVersion: String = Versions.KSP,
     val roomCompilerVersion: String = Versions.ROOM,
     val roomRuntimeVersion: String = Versions.ROOM,
+    val androidxCoreRuntimeVersion: String = Versions.CORE_RUNTIME,
 ) {
+    val androidxCoreRuntime get() = "androidx.arch.core:core-runtime:$androidxCoreRuntimeVersion"
     val kotlinGradlePlugin get() = "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
     val kotlinStdlib get() = "org.jetbrains.kotlin:kotlin-stdlib:${kotlinVersion}"
     val kspGradlePlugin get() = "com.google.devtools.ksp:symbol-processing-gradle-plugin:$kspVersion"

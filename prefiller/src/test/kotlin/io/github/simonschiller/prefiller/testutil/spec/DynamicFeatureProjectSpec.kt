@@ -66,6 +66,7 @@ open class DynamicFeatureProjectSpec(
         }
         dependencies {
             implementation(project(":app"))
+            implementation("${versionCatalog.androidxCoreRuntime}")
             implementation("${versionCatalog.roomRuntime}")
             annotationProcessor("${versionCatalog.roomCompiler}")
         }

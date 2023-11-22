@@ -43,6 +43,7 @@ open class NoSchemaLocationKotlinKaptProjectSpec(
             }
         }
         dependencies {
+            implementation("${versionCatalog.androidxCoreRuntime}")
             implementation("${versionCatalog.kotlinStdlib}")
             implementation("${versionCatalog.roomRuntime}")
             kapt("${versionCatalog.roomCompiler}")

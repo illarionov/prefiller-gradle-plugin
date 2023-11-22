@@ -63,6 +63,7 @@ open class KotlinKspProjectSpec(
             }
         }
         dependencies {
+            implementation("${versionCatalog.androidxCoreRuntime}")
             implementation("${versionCatalog.kotlinStdlib}")
             implementation("${versionCatalog.roomRuntime}")
             ksp("${versionCatalog.roomCompiler}")

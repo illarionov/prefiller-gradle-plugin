@@ -62,6 +62,7 @@ open class JavaProjectSpec(
             }
         }
         dependencies {
+            implementation("${versionCatalog.androidxCoreRuntime}")
             implementation("${versionCatalog.roomRuntime}")
             annotationProcessor("${versionCatalog.roomCompiler}")
         }

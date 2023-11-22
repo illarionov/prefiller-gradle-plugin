@@ -32,6 +32,7 @@ object Versions {
     const val TRUTH = "1.1.5" // https://mvnrepository.com/artifact/com.google.truth/truth
 
     const val APPCOMPAT = "1.4.2" // https://maven.google.com/web/index.html#androidx.appcompat:appcompat
+    const val CORE_RUNTIME = "2.2.0" // https://maven.google.com/web/index.html#androidx.arch.core:core-runtime
     const val ROOM = "2.6.0" // https://maven.google.com/web/index.html#androidx.room:room-runtime
     const val JUNIT_4 = "4.13.2" // https://mvnrepository.com/artifact/junit/junit
     const val ROBOLECTRIC = "4.11.1" // https://mvnrepository.com/artifact/org.robolectric/robolectric
