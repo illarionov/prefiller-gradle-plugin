@@ -21,10 +21,10 @@ plugins {
 
 android {
     compileSdk = Versions.COMPILE_SDK
+    namespace = "io.github.simonschiller.prefiller.sample"
 
     defaultConfig {
         minSdk = Versions.MIN_SDK
-        targetSdk = Versions.TARGET_SDK
 
         javaCompileOptions {
             annotationProcessorOptions {
