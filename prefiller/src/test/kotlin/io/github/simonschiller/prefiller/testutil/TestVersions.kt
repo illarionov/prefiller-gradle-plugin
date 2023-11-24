@@ -28,9 +28,11 @@ import io.github.simonschiller.prefiller.testutil.compatibility.KotlinVersionCom
 import io.github.simonschiller.prefiller.testutil.compatibility.KspVersionCompatibility.getKotlinKspVersion
 import io.github.simonschiller.prefiller.testutil.compatibility.RoomVersionCompatibility.getCompatibleAndroidxCoreRuntimeVersion
 import io.github.simonschiller.prefiller.testutil.compatibility.RoomVersionCompatibility.getCompatibleRoomVersion
+import io.github.simonschiller.prefiller.testutil.compatibility.RoomVersionCompatibility.isCompatibleWithRoomGradlePlugin
 import io.github.simonschiller.prefiller.testutil.spec.JavaProjectSpec
 import io.github.simonschiller.prefiller.testutil.spec.KotlinKaptProjectSpec
 import io.github.simonschiller.prefiller.testutil.spec.KotlinKspProjectSpec
+import io.github.simonschiller.prefiller.testutil.spec.KotlinKspRoomPluginProjectSpec
 import io.github.simonschiller.prefiller.testutil.spec.NoSchemaLocationJavaProjectSpec
 import io.github.simonschiller.prefiller.testutil.spec.NoSchemaLocationKotlinKaptProjectSpec
 import io.github.simonschiller.prefiller.testutil.spec.NoSchemaLocationKotlinKspProjectSpec
@@ -190,6 +192,9 @@ class LanguageTestVersions : ArgumentsProvider {
         add(KotlinKaptProjectSpec(versionCatalog))
         if (versionCatalog.agpIsCompatibleWithKsp()) {
             add(KotlinKspProjectSpec(versionCatalog))
+        }
+        if (versionCatalog.isCompatibleWithRoomGradlePlugin()) {
+            add(KotlinKspRoomPluginProjectSpec(versionCatalog))
         }
     }
 }

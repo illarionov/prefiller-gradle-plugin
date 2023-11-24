@@ -44,6 +44,7 @@ object Dependencies {
     const val AGP = "com.android.tools.build:gradle:${Versions.AGP}"
     const val KOTLIN_GRADLE_PLUGIN = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.KOTLIN}"
     const val KSP_GRADLE_PLUGIN = "com.google.devtools.ksp:symbol-processing-gradle-plugin:${Versions.KSP}"
+    const val ROOM_GRADLE_PLUGIN = "androidx.room:room-gradle-plugin:${Versions.ROOM}"
     const val PUBLISH_GRADLE_PLUGIN = "com.gradle.publish:plugin-publish-plugin:${Versions.PUBLISH_GRADLE_PLUGIN}"
 
     const val KOTLIN_STDLIB = "org.jetbrains.kotlin:kotlin-stdlib:${Versions.KOTLIN}"

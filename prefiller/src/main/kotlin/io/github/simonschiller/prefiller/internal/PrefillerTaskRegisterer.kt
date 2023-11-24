@@ -10,6 +10,7 @@ import io.github.simonschiller.prefiller.PrefillerTask
 import io.github.simonschiller.prefiller.internal.util.Version
 import org.gradle.api.Project
 import org.gradle.api.file.Directory
+import org.gradle.api.file.ProjectLayout
 import org.gradle.api.plugins.ExtensionContainer
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ProviderFactory
@@ -22,6 +23,7 @@ internal class PrefillerTaskRegisterer(
 ) {
     private val extensions: ExtensionContainer = project.extensions
     private val providerFactory: ProviderFactory = project.providers
+    private val projectLayout: ProjectLayout = project.layout
     private val databaseDir = project.layout.buildDirectory.dir(
         "${SdkConstants.FD_GENERATED}/prefiller/${variant.name}"
     )
@@ -35,7 +37,7 @@ internal class PrefillerTaskRegisterer(
         val classname = config.classname.orNull ?: error("No classname configured for database ${config.name}")
 
         val databaseFile = databaseDir.map { dir -> dir.file("${config.name}.db") }
-        val schemaLocation = getSchemaLocation()
+        val schemaLocation = getSchemaLocation(config.schemaDirectory)
 
         // Register task for database
         val task = project.tasks.register(taskName, PrefillerTask::class.java) { prefillerTask ->
@@ -53,8 +55,8 @@ internal class PrefillerTaskRegisterer(
             // On Gradle versions earlier than 6.3, we have to resolve the path manually due to a bug
             val schemaDir = schemaLocation.map { parentDir ->
                 if (Version.parse(project.gradle.gradleVersion) < Version.parse("6.3")) {
-                    val fileProvider = project.provider { parentDir.asFile.resolve(classname) }
-                    project.layout.dir(fileProvider).get()
+                    val fileProvider = providerFactory.provider { parentDir.asFile.resolve(classname) }
+                    projectLayout.dir(fileProvider).get()
                 } else {
                     parentDir.dir(classname)
                 }
@@ -77,8 +79,9 @@ internal class PrefillerTaskRegisterer(
     }
 
     // Read the Room schema location from the annotation processor options
-    private fun getSchemaLocation(): Provider<Directory> {
-        val fileProvider = providerFactory.provider {
+    private fun getSchemaLocation(defaultSchemaDir: Provider<Directory>): Provider<Directory> {
+        val projectDirectory = project.layout.projectDirectory
+        val schemaDirectoryProvider = providerFactory.provider {
             val kaptSchemaLocation = getKaptSchemaLocation()
             val kspSchemaLocation = getKspSchemaLocation()
             val javaAptSchemaLocation = getJavaAptSchemaLocation()
@@ -89,9 +92,10 @@ internal class PrefillerTaskRegisterer(
                 javaAptSchemaLocation != null -> javaAptSchemaLocation
                 else -> error("Could not find schema location")
             }
-            project.file(schemaLocation)
+            projectDirectory.dir(schemaLocation)
         }
-        return project.layout.dir(fileProvider)
+
+        return defaultSchemaDir.orElse(schemaDirectoryProvider)
     }
 
     private fun getKaptSchemaLocation(): String? = try {

@@ -17,6 +17,7 @@
 package io.github.simonschiller.prefiller
 
 import org.gradle.api.file.ConfigurableFileCollection
+import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
@@ -24,6 +25,7 @@ import org.gradle.api.provider.Property
 class DatabaseConfig internal constructor(val name: String, objects: ObjectFactory) {
     val classname: Property<String> = objects.property(String::class.java)
     val scripts: ConfigurableFileCollection = objects.fileCollection()
+    val schemaDirectory: DirectoryProperty = objects.directoryProperty()
 
     @Deprecated("Use the new scripts property instead.", ReplaceWith("scripts"))
     val script: RegularFileProperty = objects.fileProperty()

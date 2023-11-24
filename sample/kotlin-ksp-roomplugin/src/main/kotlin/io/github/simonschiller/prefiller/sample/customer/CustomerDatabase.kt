@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-rootProject.name = "prefiller-plugin"
+package io.github.simonschiller.prefiller.sample.customer
 
-include(":prefiller")
+import androidx.room.Database
+import androidx.room.RoomDatabase
+import io.github.simonschiller.prefiller.sample.creditcard.CreditCard
+import io.github.simonschiller.prefiller.sample.creditcard.CreditCardDao
 
-// Samples can be excluded to publish the plugin when the API changes
-if (!startParameter.projectProperties.containsKey("excludeSample")) {
-    include(":sample:java")
-    include(":sample:kotlin-kapt")
-    include(":sample:kotlin-ksp")
-    include(":sample:kotlin-ksp-roomplugin")
+@Database(entities = [CreditCard::class, Customer::class], views = [AdultCustomer::class], version = 1)
+abstract class CustomerDatabase : RoomDatabase() {
+    abstract fun creditCardDao(): CreditCardDao
+    abstract fun customerDao(): CustomerDao
 }

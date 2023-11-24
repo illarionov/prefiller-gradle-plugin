@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-rootProject.name = "prefiller-plugin"
+package io.github.simonschiller.prefiller.sample.order
 
-include(":prefiller")
+import androidx.room.Entity
+import androidx.room.Fts4
 
-// Samples can be excluded to publish the plugin when the API changes
-if (!startParameter.projectProperties.containsKey("excludeSample")) {
-    include(":sample:java")
-    include(":sample:kotlin-kapt")
-    include(":sample:kotlin-ksp")
-    include(":sample:kotlin-ksp-roomplugin")
-}
+@Fts4
+@Entity(tableName = "orders")
+data class Order(
+    val description: String
+)
