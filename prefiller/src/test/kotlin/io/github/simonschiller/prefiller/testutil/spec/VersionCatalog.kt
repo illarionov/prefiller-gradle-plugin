@@ -15,6 +15,7 @@ data class VersionCatalog(
     val kspVersion: String = Versions.KSP,
     val roomCompilerVersion: String = Versions.ROOM,
     val roomRuntimeVersion: String = Versions.ROOM,
+    val roomGradlePluginVersion: String = Versions.ROOM,
     val androidxCoreRuntimeVersion: String = Versions.CORE_RUNTIME,
 ) {
     val androidxCoreRuntime get() = "androidx.arch.core:core-runtime:$androidxCoreRuntimeVersion"
@@ -23,6 +24,7 @@ data class VersionCatalog(
     val kspGradlePlugin get() = "com.google.devtools.ksp:symbol-processing-gradle-plugin:$kspVersion"
     val roomCompiler get() = "androidx.room:room-compiler:$roomCompilerVersion"
     val roomRuntime get() = "androidx.room:room-runtime:$roomRuntimeVersion"
+    val roomGradlePlugin get() = "androidx.room:room-gradle-plugin:$roomGradlePluginVersion"
 
     override fun toString(): String {
         return "{ Gradle $gradleVersion, " +

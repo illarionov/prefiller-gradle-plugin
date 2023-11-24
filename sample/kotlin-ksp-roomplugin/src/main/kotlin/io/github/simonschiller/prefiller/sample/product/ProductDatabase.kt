@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-rootProject.name = "prefiller-plugin"
+package io.github.simonschiller.prefiller.sample.product
 
-include(":prefiller")
+import androidx.room.Database
+import androidx.room.RoomDatabase
+import io.github.simonschiller.prefiller.sample.order.Order
+import io.github.simonschiller.prefiller.sample.order.OrderDao
 
-// Samples can be excluded to publish the plugin when the API changes
-if (!startParameter.projectProperties.containsKey("excludeSample")) {
-    include(":sample:java")
-    include(":sample:kotlin-kapt")
-    include(":sample:kotlin-ksp")
-    include(":sample:kotlin-ksp-roomplugin")
+@Database(entities = [Product::class, Order::class], version = 3)
+abstract class ProductDatabase : RoomDatabase() {
+    abstract fun productDao(): ProductDao
+    abstract fun orderDao(): OrderDao
 }

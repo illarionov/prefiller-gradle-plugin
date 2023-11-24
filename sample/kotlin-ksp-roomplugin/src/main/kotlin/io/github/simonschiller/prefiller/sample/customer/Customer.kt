@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-rootProject.name = "prefiller-plugin"
+package io.github.simonschiller.prefiller.sample.customer
 
-include(":prefiller")
+import androidx.room.Entity
+import androidx.room.Index
+import androidx.room.PrimaryKey
 
-// Samples can be excluded to publish the plugin when the API changes
-if (!startParameter.projectProperties.containsKey("excludeSample")) {
-    include(":sample:java")
-    include(":sample:kotlin-kapt")
-    include(":sample:kotlin-ksp")
-    include(":sample:kotlin-ksp-roomplugin")
-}
+@Entity(tableName = "customers", indices = [Index("name", unique = true)])
+data class Customer(
+    @PrimaryKey(autoGenerate = true) val id: Long,
+    val name: String,
+    val age: Int
+)

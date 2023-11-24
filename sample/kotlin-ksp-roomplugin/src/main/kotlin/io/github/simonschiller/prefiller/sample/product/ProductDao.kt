@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-rootProject.name = "prefiller-plugin"
+package io.github.simonschiller.prefiller.sample.product
 
-include(":prefiller")
+import androidx.room.Dao
+import androidx.room.Query
 
-// Samples can be excluded to publish the plugin when the API changes
-if (!startParameter.projectProperties.containsKey("excludeSample")) {
-    include(":sample:java")
-    include(":sample:kotlin-kapt")
-    include(":sample:kotlin-ksp")
-    include(":sample:kotlin-ksp-roomplugin")
+@Dao
+interface ProductDao {
+
+    @Query("SELECT * FROM products")
+    fun getAll(): List<Product>
 }

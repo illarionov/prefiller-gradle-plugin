@@ -1,8 +1,13 @@
 package io.github.simonschiller.prefiller.testutil.compatibility
 
 import io.github.simonschiller.prefiller.internal.util.Version
+import io.github.simonschiller.prefiller.testutil.spec.VersionCatalog
 
 internal object RoomVersionCompatibility {
+    val ROOM_2_4_3 = Version(2, 4, 3)
+    val ROOM_2_5_2 = Version(2, 5, 2)
+    val ROOM_2_6_0 = Version(2, 6, 0)
+
     fun getCompatibleAndroidxCoreRuntimeVersion(
         compileSdkVersion: Int,
     ): Version {
@@ -23,11 +28,15 @@ internal object RoomVersionCompatibility {
                 // of the Android APIs
                 Version.parse(Versions.ROOM)
             } else {
-                Version(2, 5, 2)
+                ROOM_2_5_2
             }
         }
 
-        compileSdkVersion >= 33 -> Version(2, 5, 2)
-        else -> Version(2, 4, 3)
+        compileSdkVersion >= 33 -> ROOM_2_5_2
+        else -> ROOM_2_4_3
+    }
+
+    fun VersionCatalog.isCompatibleWithRoomGradlePlugin(): Boolean {
+        return Version.parse(roomRuntimeVersion) >= ROOM_2_6_0
     }
 }

@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-rootProject.name = "prefiller-plugin"
+package io.github.simonschiller.prefiller.sample.customer
 
-include(":prefiller")
+import androidx.room.DatabaseView
 
-// Samples can be excluded to publish the plugin when the API changes
-if (!startParameter.projectProperties.containsKey("excludeSample")) {
-    include(":sample:java")
-    include(":sample:kotlin-kapt")
-    include(":sample:kotlin-ksp")
-    include(":sample:kotlin-ksp-roomplugin")
-}
+@DatabaseView("SELECT * FROM customers WHERE age >= 18", viewName = "adults")
+data class AdultCustomer(
+    val id: Long,
+    val name: String,
+    val age: Int
+)
