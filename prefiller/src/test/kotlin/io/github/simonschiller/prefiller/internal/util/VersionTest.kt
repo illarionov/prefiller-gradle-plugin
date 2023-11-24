@@ -26,6 +26,7 @@ class VersionTest {
     fun `Parsing versions works correctly`() {
         assertThrows<IllegalArgumentException> { Version.parse("12") }
         assertThat(Version.parse("12.451")).isEqualTo(Version(12, 451))
+        assertThat(Version.parse("12.451-rc-3")).isEqualTo(Version(12, 451, null, "rc-3"))
         assertThat(Version.parse("12.451.6")).isEqualTo(Version(12, 451, 6))
         assertThat(Version.parse("12.451.6-beta05")).isEqualTo(Version(12, 451, 6, "beta05"))
         assertThrows<IllegalArgumentException> { Version.parse("12.451.6.4-beta05") }
