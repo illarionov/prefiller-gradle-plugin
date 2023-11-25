@@ -85,7 +85,7 @@ class PrefillerIntegrationTest {
         project.setup(projectSpec)
         project.run("prefillPeopleDebugDatabase")
 
-        val databaseFile = project.moduleDir.resolve("build/generated/prefiller/debug/people.db")
+        val databaseFile = project.moduleDir.resolve("build/generated/assets/prefillPeopleDebugDatabase/people.db")
         assertThat(databaseFile.exists()).isTrue()
     }
 
@@ -95,7 +95,7 @@ class PrefillerIntegrationTest {
         project.setup(projectSpec)
         project.run("assembleDebug")
 
-        val databaseFile = project.moduleDir.resolve("build/generated/prefiller/debug/people.db")
+        val databaseFile = project.moduleDir.resolve("build/generated/assets/prefillPeopleDebugDatabase/people.db")
         assertThat(databaseFile.exists()).isTrue()
     }
 
@@ -144,7 +144,7 @@ class PrefillerIntegrationTest {
         project.setup(DynamicFeatureProjectSpec(versionCatalog))
         project.run(":module:prefillPeopleDebugDatabase")
 
-        val databaseFile = project.moduleDir.resolve("build/generated/prefiller/debug/people.db")
+        val databaseFile = project.moduleDir.resolve("build/generated/assets/prefillPeopleDebugDatabase/people.db")
         assertThat(databaseFile.exists()).isTrue()
     }
 }

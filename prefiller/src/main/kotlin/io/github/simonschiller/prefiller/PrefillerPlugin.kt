@@ -16,11 +16,11 @@
 
 package io.github.simonschiller.prefiller
 
-import com.android.build.gradle.AppExtension
+import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.DynamicFeaturePlugin
-import com.android.build.gradle.LibraryExtension
 import com.android.build.gradle.LibraryPlugin
+import com.android.build.gradle.TestPlugin
 import io.github.simonschiller.prefiller.internal.PrefillerTaskRegisterer
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -35,19 +35,19 @@ class PrefillerPlugin : Plugin<Project> {
             error("Prefiller is only applicable to Android projects")
         }
 
-        // Register tasks when Android plugins are available
-        project.plugins.configureEach { plugin ->
-            val variants = when (plugin) {
-                is AppPlugin, is DynamicFeaturePlugin -> project.extensions.getByType(AppExtension::class.java).applicationVariants
-                is LibraryPlugin -> project.extensions.getByType(LibraryExtension::class.java).libraryVariants
-                else -> null
-            }
-
-            // Register prefiller tasks
-            variants?.configureEach { variant ->
-                val registerer = PrefillerTaskRegisterer(project, variant)
-                registerer.setupSourceSets()
-                extension.databaseConfigs.forEach(registerer::registerTasks)
+        listOf(
+            AppPlugin::class.java,
+            LibraryPlugin::class.java,
+            DynamicFeaturePlugin::class.java,
+            TestPlugin::class.java,
+        ).forEach { agpLibraryPlugin ->
+            project.plugins.withType(agpLibraryPlugin) {
+                project.extensions.configure(AndroidComponentsExtension::class.java) { agpExtension ->
+                    agpExtension.onVariants { variant ->
+                        val registerer = PrefillerTaskRegisterer(project, variant)
+                        extension.databaseConfigs.forEach(registerer::registerTasks)
+                    }
+                }
             }
         }
     }
