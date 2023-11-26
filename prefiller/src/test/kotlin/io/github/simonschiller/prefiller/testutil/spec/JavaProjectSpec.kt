@@ -89,6 +89,16 @@ open class JavaProjectSpec(
             @NonNull
             public String name;
             public int age;
+            @ColumnInfo(collate = ColumnInfo.NOCASE)
+            public String email;
+            @ColumnInfo(collate = ColumnInfo.UNICODE)
+            public String address;
+            @ColumnInfo(collate = ColumnInfo.BINARY)
+            public String socialSecurityNumber;
+            @ColumnInfo(collate = ColumnInfo.LOCALIZED)
+            public String placeOfBirth;
+            @ColumnInfo(collate = ColumnInfo.RTRIM)
+            public String favoriteIceCream;
         }
             
     """.trimIndent()

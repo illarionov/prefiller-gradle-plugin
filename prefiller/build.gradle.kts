@@ -39,6 +39,7 @@ dependencies {
     antlr(Dependencies.ANTLR)
 
     implementation(Dependencies.ANTLR_RUNTIME)
+    implementation(Dependencies.ICU4J)
     implementation(Dependencies.SQLITE)
     implementation(Dependencies.JSONP)
 

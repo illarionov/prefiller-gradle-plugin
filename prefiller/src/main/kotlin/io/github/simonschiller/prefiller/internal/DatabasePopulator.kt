@@ -16,8 +16,12 @@
 
 package io.github.simonschiller.prefiller.internal
 
+import com.ibm.icu.util.ULocale
+import io.github.simonschiller.prefiller.internal.util.SqliteIcuCollation
+import org.sqlite.Collation
 import org.sqlite.JDBC
 import java.io.File
+import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.SQLException
 
@@ -31,6 +35,7 @@ internal class DatabasePopulator {
         // Populate the database
         try {
             DriverManager.getConnection("jdbc:sqlite:$target").use { connection ->
+                connection.setupAndroidCollations()
                 connection.createStatement().use { statement ->
                     statements.forEach(statement::addBatch)
                     statement.executeBatch()
@@ -39,6 +44,11 @@ internal class DatabasePopulator {
         } catch (exception: SQLException) {
             throw IllegalStateException("Could not populate database, please check your script", exception)
         }
+    }
+
+    private fun Connection.setupAndroidCollations() {
+        Collation.create(this, "UNICODE", SqliteIcuCollation(ULocale.ROOT))
+        Collation.create(this, "LOCALIZED", SqliteIcuCollation(ULocale.ENGLISH))
     }
 
     // Make the SQLite JDBC driver usable

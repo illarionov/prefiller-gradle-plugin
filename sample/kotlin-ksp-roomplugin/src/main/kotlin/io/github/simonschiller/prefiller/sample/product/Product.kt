@@ -16,6 +16,7 @@
 
 package io.github.simonschiller.prefiller.sample.product
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -23,5 +24,6 @@ import androidx.room.PrimaryKey
 data class Product(
     @PrimaryKey(autoGenerate = true) val id: Long,
     val name: String,
+    @ColumnInfo(collate = ColumnInfo.UNICODE)
     val description: String
 )
