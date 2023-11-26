@@ -16,11 +16,13 @@
 
 package io.github.simonschiller.prefiller.sample.customer
 
+import androidx.room.ColumnInfo
 import androidx.room.DatabaseView
 
 @DatabaseView("SELECT * FROM customers WHERE age >= 18", viewName = "adults")
 data class AdultCustomer(
     val id: Long,
+    @ColumnInfo(collate = ColumnInfo.LOCALIZED)
     val name: String,
     val age: Int
 )

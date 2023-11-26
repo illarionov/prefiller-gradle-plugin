@@ -26,6 +26,7 @@ object Versions {
 
     const val SDK_COMMON = "31.1.4" // https://maven.google.com/web/index.html#com.android.tools:sdk-common
     const val ANTLR = "4.13.1" // https://mvnrepository.com/artifact/org.antlr/antlr4
+    const val ICU4J = "74.1" // https://mvnrepository.com/artifact/com.ibm.icu/icu4j
     const val SQLITE = "3.44.0.0" // https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc
     const val JSONP = "2.0.1" // https://mvnrepository.com/artifact/org.glassfish/jakarta.json
     const val JUNIT_5 = "5.10.1" // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-engine
@@ -51,6 +52,7 @@ object Dependencies {
     const val SDK_COMMON = "com.android.tools:common:${Versions.SDK_COMMON}"
     const val ANTLR = "org.antlr:antlr4:${Versions.ANTLR}"
     const val ANTLR_RUNTIME = "org.antlr:antlr4-runtime:${Versions.ANTLR}"
+    const val ICU4J = "com.ibm.icu:icu4j:${Versions.ICU4J}"
     const val SQLITE = "org.xerial:sqlite-jdbc:${Versions.SQLITE}"
     const val JSONP = "org.glassfish:jakarta.json:${Versions.JSONP}"
     const val JUNIT_5_ENGINE = "org.junit.jupiter:junit-jupiter-engine:${Versions.JUNIT_5}"
