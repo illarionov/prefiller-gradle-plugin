@@ -7,6 +7,6 @@ import org.sqlite.Collation
 internal class SqliteIcuCollation(
     locale: ULocale = ULocale.ROOT,
 ) : Collation() {
-    private val collator: Collator = Collator.getInstance(locale)
+    private val collator: Collator by lazy(LazyThreadSafetyMode.NONE) { Collator.getInstance(locale) }
     override fun xCompare(str1: String, str2: String): Int = collator.compare(str1, str2)
 }
