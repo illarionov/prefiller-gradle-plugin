@@ -2,7 +2,48 @@
 [![GitHub Release](https://img.shields.io/github/v/release/simonschiller/prefiller)](https://github.com/simonschiller/prefiller/releases)
 [![License](https://img.shields.io/github/license/simonschiller/prefiller)](https://github.com/simonschiller/prefiller/blob/main/LICENSE)
 
-# Prefiller
+
+# Prefiller Fork
+
+This is a fork of the original project [simonschiller/prefiller](https://github.com/simonschiller/prefiller) with 
+version updates, some fixes and new features.
+
+Key changes:
+* Supports AGP 7.4.2+, Gradle 7.5.1+, Room 2.6.0
+* Works with Room Gradle Plugin
+* Added `schemaDirectory` parameter which can be used to manually specify the directory with schemas (for use with the Room Gradle Plugin)
+* Works with Release Candidate versions of Gradle
+* ANTLR removed from transitive dependencies
+* Plugin rewritten using AGP Variants API and Gradle Workers API
+* Added Android UNICODE and LOCALIZED collations (experimental)
+
+###### How to test
+
+Development builds are released to a (temporary created) public Maven repository:
+```kotlin
+plugins {
+    id("io.github.simonschiller.prefiller") version "1.6.0-SNAPSHOT"
+}
+
+pluginManagement {
+    repositories {
+        exclusiveContent {
+            forRepository {
+                maven {
+                    url = uri("https://maven.pixnews.ru")
+                }
+            }
+            filter {
+                includeGroup("io.github.simonschiller.prefiller")
+                includeGroup("io.github.simonschiller")
+            }
+        }
+    }
+}
+```
+You can also add this repository as an included build and configure dependency substitution in Gradle.
+
+## Prefiller Original
 
 Prefiller is a Gradle plugin that generates pre-filled Room databases at compile time. 
 

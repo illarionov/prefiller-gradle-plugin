@@ -28,7 +28,7 @@ plugins {
 }
 
 group = "io.github.simonschiller"
-version = "1.5.0-SNAPSHOT" // Also update the version in the README
+version = "1.6.0-SNAPSHOT" // Also update the version in the README
 
 repositories {
     google()
