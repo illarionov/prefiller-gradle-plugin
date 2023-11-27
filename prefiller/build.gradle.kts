@@ -38,10 +38,10 @@ repositories {
 dependencies {
     antlr(Dependencies.ANTLR)
 
-    implementation(Dependencies.ANTLR_RUNTIME)
-    implementation(Dependencies.ICU4J)
-    implementation(Dependencies.SQLITE)
-    implementation(Dependencies.JSONP)
+    compileOnly(Dependencies.ANTLR_RUNTIME)
+    compileOnly(Dependencies.ICU4J)
+    compileOnly(Dependencies.SQLITE)
+    compileOnly(Dependencies.JSONP)
 
     compileOnly(Dependencies.AGP)
     compileOnly(Dependencies.SDK_COMMON)
@@ -51,6 +51,10 @@ dependencies {
     testRuntimeOnly(Dependencies.JUNIT_5_ENGINE)
     testImplementation(Dependencies.JUNIT_5_API)
     testImplementation(Dependencies.JUNIT_5_PARAMS)
+    testImplementation(Dependencies.ANTLR_RUNTIME)
+    testImplementation(Dependencies.ICU4J)
+    testImplementation(Dependencies.SQLITE)
+    testImplementation(Dependencies.JSONP)
     testImplementation(Dependencies.TRUTH)
 }
 

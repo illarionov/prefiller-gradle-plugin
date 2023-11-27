@@ -8,6 +8,7 @@ import io.github.simonschiller.prefiller.PrefillerTask
 import org.gradle.api.Project
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.Directory
+import org.gradle.api.file.FileCollection
 import org.gradle.api.plugins.ExtensionContainer
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ProviderFactory
@@ -16,7 +17,8 @@ import java.util.Locale
 
 internal class PrefillerTaskRegisterer(
     private val project: Project,
-    private val variant: Variant
+    private val variant: Variant,
+    private val prefillerClasspath: FileCollection,
 ) {
     private val extensions: ExtensionContainer = project.extensions
     private val providerFactory: ProviderFactory = project.providers
@@ -37,7 +39,8 @@ internal class PrefillerTaskRegisterer(
             databaseName = config.name,
             scriptFiles = config.getScriptFiles(project),
             schemaDirectory = schemaLocation.map { parentDir -> parentDir.dir(classname) },
-            variantName = variantName
+            variantName = variantName,
+            prefillerClasspath = prefillerClasspath,
         )
         assets.addGeneratedSourceDirectory(prefillerTask, PrefillerTask::outputDirectory)
 

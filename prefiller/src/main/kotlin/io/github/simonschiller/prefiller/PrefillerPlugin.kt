@@ -24,6 +24,7 @@ import com.android.build.gradle.TestPlugin
 import io.github.simonschiller.prefiller.internal.PrefillerTaskRegisterer
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.attributes.Usage
 
 class PrefillerPlugin : Plugin<Project> {
 
@@ -35,6 +36,21 @@ class PrefillerPlugin : Plugin<Project> {
             error("Prefiller is only applicable to Android projects")
         }
 
+        val prefillerClasspath = project.configurations.maybeCreate("prefiller").apply {
+            description = "All Prefiller dependencies"
+            isCanBeResolved = true
+            isVisible = false
+            isCanBeConsumed = false
+            attributes {
+                it.attribute(Usage.USAGE_ATTRIBUTE, project.objects.named(Usage::class.java, Usage.JAVA_RUNTIME))
+            }
+            defaultDependencies { dependencies ->
+                PREFILLER_RUNTIME_DEPENDENCIES.forEach {
+                    dependencies.add(project.dependencies.create(it))
+                }
+            }
+        }
+
         listOf(
             AppPlugin::class.java,
             LibraryPlugin::class.java,
@@ -44,7 +60,7 @@ class PrefillerPlugin : Plugin<Project> {
             project.plugins.withType(agpLibraryPlugin) {
                 project.extensions.configure(AndroidComponentsExtension::class.java) { agpExtension ->
                     agpExtension.onVariants { variant ->
-                        val registerer = PrefillerTaskRegisterer(project, variant)
+                        val registerer = PrefillerTaskRegisterer(project, variant, prefillerClasspath)
                         extension.databaseConfigs.forEach(registerer::registerTasks)
                     }
                 }
