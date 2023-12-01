@@ -16,13 +16,15 @@
 
 package io.github.simonschiller.prefiller
 
-import com.android.build.gradle.AppExtension
+import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.DynamicFeaturePlugin
-import com.android.build.gradle.LibraryExtension
 import com.android.build.gradle.LibraryPlugin
+import com.android.build.gradle.TestPlugin
+import io.github.simonschiller.prefiller.internal.PrefillerTaskRegisterer
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.attributes.Usage
 
 class PrefillerPlugin : Plugin<Project> {
 
@@ -34,17 +36,34 @@ class PrefillerPlugin : Plugin<Project> {
             error("Prefiller is only applicable to Android projects")
         }
 
-        // Register tasks when Android plugins are available
-        project.plugins.configureEach { plugin ->
-            val variants = when (plugin) {
-                is AppPlugin, is DynamicFeaturePlugin -> project.extensions.getByType(AppExtension::class.java).applicationVariants
-                is LibraryPlugin -> project.extensions.getByType(LibraryExtension::class.java).libraryVariants
-                else -> null
+        val prefillerClasspath = project.configurations.maybeCreate("prefiller").apply {
+            description = "All Prefiller dependencies"
+            isCanBeResolved = true
+            isVisible = false
+            isCanBeConsumed = false
+            attributes {
+                it.attribute(Usage.USAGE_ATTRIBUTE, project.objects.named(Usage::class.java, Usage.JAVA_RUNTIME))
             }
+            defaultDependencies { dependencies ->
+                PREFILLER_RUNTIME_DEPENDENCIES.forEach {
+                    dependencies.add(project.dependencies.create(it))
+                }
+            }
+        }
 
-            // Register prefiller tasks
-            variants?.configureEach { variant ->
-                extension.databaseConfigs.forEach { config -> config.registerTasks(project, variant) }
+        listOf(
+            AppPlugin::class.java,
+            LibraryPlugin::class.java,
+            DynamicFeaturePlugin::class.java,
+            TestPlugin::class.java,
+        ).forEach { agpLibraryPlugin ->
+            project.plugins.withType(agpLibraryPlugin) {
+                project.extensions.configure(AndroidComponentsExtension::class.java) { agpExtension ->
+                    agpExtension.onVariants { variant ->
+                        val registerer = PrefillerTaskRegisterer(project, variant, prefillerClasspath)
+                        extension.databaseConfigs.forEach(registerer::registerTasks)
+                    }
+                }
             }
         }
     }

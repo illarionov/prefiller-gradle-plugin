@@ -24,6 +24,7 @@ buildscript {
     dependencies {
         classpath(Dependencies.AGP)
         classpath(Dependencies.KOTLIN_GRADLE_PLUGIN)
+        classpath(Dependencies.ROOM_GRADLE_PLUGIN)
         classpath(Dependencies.KSP_GRADLE_PLUGIN)
         classpath(Dependencies.PUBLISH_GRADLE_PLUGIN)
         classpath("io.github.simonschiller:prefiller:+") // Always use the latest version of the plugin

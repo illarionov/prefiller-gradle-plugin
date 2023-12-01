@@ -23,4 +23,5 @@ if (!startParameter.projectProperties.containsKey("excludeSample")) {
     include(":sample:java")
     include(":sample:kotlin-kapt")
     include(":sample:kotlin-ksp")
+    include(":sample:kotlin-ksp-roomplugin")
 }

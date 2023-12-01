@@ -54,13 +54,23 @@ class Version(
             val versionSplits = version.split('.')
             check(versionSplits.size == 2 || versionSplits.size == 3)
 
-            val lastPartSplits = versionSplits.getOrNull(2)?.split('-') ?: emptyList()
-            check(lastPartSplits.size in 0..2)
+            val lastPartSplits = versionSplits.last().split('-', limit = 2)
+            check(lastPartSplits.size in 1..2)
 
+            val major = versionSplits[0].toInt()
+            val minor: Int
+            val patch: Int?
+            if (versionSplits.size == 2) {
+                minor = lastPartSplits[0].toInt()
+                patch = null
+            } else {
+                minor = versionSplits[1].toInt()
+                patch = lastPartSplits[0].toInt()
+            }
             Version(
-                major = versionSplits[0].toInt(),
-                minor = versionSplits[1].toInt(),
-                patch = lastPartSplits.getOrNull(0)?.toInt(),
+                major = major,
+                minor = minor,
+                patch = patch,
                 qualifier = lastPartSplits.getOrNull(1)
             )
         } catch (exception: Exception) {
